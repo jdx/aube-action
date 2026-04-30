@@ -161,3 +161,46 @@ jobs:
           test -d node_modules
           test -f node_modules/is-odd/package.json
           node -e 'process.exit(require("is-odd")(3) ? 0 : 1)'
+
+  # Single-name gate: aggregates every matrix combination above into one
+  # required status check. If any upstream job failed, was cancelled, or
+  # was skipped, this step exits non-zero so the PR is blocked. Lets the
+  # branch-protection rule depend on one name instead of N.
+  final:
+    needs:
+      - default
+      - pinned
+      - node-explicit
+      - node-auto-mise-toml
+      - node-auto-nvmrc
+      - node-auto-missing-errors
+      - run-install
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    if: always()
+    steps:
+      - name: Gate on upstream job results
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+
+          needs = json.loads(os.environ["NEEDS_JSON"])
+          failed = False
+          for name, data in sorted(needs.items()):
+              result = data.get("result", "unknown")
+              if result == "success":
+                  print(f"::notice::{name}: {result}")
+              else:
+                  print(f"::error::{name}: {result}")
+                  failed = True
+
+          if failed:
+              print("One or more upstream jobs did not complete successfully.")
+              sys.exit(1)
+
+          print("All CI jobs completed successfully.")
+          PY
