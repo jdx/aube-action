@@ -1,0 +1,163 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  default:
+    name: default / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - id: setup
+        uses: ./
+      - shell: bash
+        run: |
+          aube --version
+          test -n "${{ steps.setup.outputs.version }}"
+          test -n "${{ steps.setup.outputs.bin-path }}"
+          test -z "${{ steps.setup.outputs.node-version }}"
+
+  pinned:
+    name: pinned aube / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./
+        with:
+          version: "1.5.1"
+      - shell: bash
+        run: |
+          aube --version
+          aube --version | grep -q '1\.5\.1'
+
+  node-explicit:
+    name: node explicit / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - id: setup
+        uses: ./
+        with:
+          node-version: "22"
+      - shell: bash
+        run: |
+          node --version | grep -q '^v22\.'
+          test -n "${{ steps.setup.outputs.node-version }}"
+          test -n "${{ steps.setup.outputs.node-bin-path }}"
+
+  node-auto-mise-toml:
+    name: node auto via mise.toml / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - shell: bash
+        run: |
+          mkdir fixture
+          cat > fixture/mise.toml <<'EOF'
+          [tools]
+          node = "20"
+          EOF
+      - uses: ./
+        with:
+          node-version: auto
+          working-directory: fixture
+      - shell: bash
+        run: node --version | grep -q '^v20\.'
+
+  node-auto-nvmrc:
+    name: node auto via .nvmrc / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - shell: bash
+        run: |
+          mkdir fixture
+          echo "22" > fixture/.nvmrc
+      - uses: ./
+        with:
+          node-version: auto
+          working-directory: fixture
+      - shell: bash
+        run: node --version | grep -q '^v22\.'
+
+  node-auto-missing-errors:
+    name: node auto fails when nothing is pinned
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - shell: bash
+        run: mkdir empty
+      - id: setup
+        continue-on-error: true
+        uses: ./
+        with:
+          node-version: auto
+          working-directory: empty
+      - shell: bash
+        run: |
+          if [ "${{ steps.setup.outcome }}" != "failure" ]; then
+            echo "expected the action to fail when no node version is pinned"
+            exit 1
+          fi
+
+  run-install:
+    name: run-install / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - shell: bash
+        run: |
+          mkdir project
+          cat > project/package.json <<'EOF'
+          {
+            "name": "aube-action-test",
+            "version": "0.0.0",
+            "private": true,
+            "dependencies": {
+              "is-odd": "3.0.1"
+            }
+          }
+          EOF
+      - uses: ./
+        with:
+          node-version: "22"
+          working-directory: project
+          run-install: true
+      - shell: bash
+        working-directory: project
+        run: |
+          test -d node_modules
+          test -f node_modules/is-odd/package.json
+          node -e 'process.exit(require("is-odd")(3) ? 0 : 1)'

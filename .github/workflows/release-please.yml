@@ -1,0 +1,67 @@
+name: release-please
+
+# Conventional-commit driven release flow for the aube-action repo.
+#
+# On every push to main, release-please opens (or refreshes) a PR with a
+# version bump in `.release-please-manifest.json` and a regenerated
+# `CHANGELOG.md`. Merging that PR creates the git tag and the GitHub
+# release. The follow-up `major-tag` job fast-forwards `vN` (e.g. `v1`)
+# to the new release commit so consumers pinning `endevco/aube-action@v1`
+# pick it up automatically.
+#
+# Both steps push to main / push tags, so the workflow runs as a PAT
+# (`RELEASE_PLEASE_TOKEN`). GITHUB_TOKEN-opened PRs don't trigger
+# downstream workflows, which would mean the release PR's `test`
+# workflow wouldn't run -- using a PAT fixes that too.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    name: release-please
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  major-tag:
+    name: Update major version tag
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+      - name: Move v<major> tag to ${{ needs.release-please.outputs.tag_name }}
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          major="${TAG%%.*}"
+          git fetch --tags origin
+          git tag -f "$major" "$TAG"
+          git push -f origin "$major"

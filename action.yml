@@ -1,0 +1,239 @@
+name: Setup aube package manager
+description: Install aube and add it to PATH.
+author: jdx
+branding:
+  icon: package
+  color: orange
+
+inputs:
+  version:
+    description: 'aube version to install. Accepts "latest", a semver like "1.5.1", or a tag like "v1.5.1".'
+    required: false
+    default: latest
+  node-version:
+    description: |
+      Optional Node.js install via mise. Special values:
+        ""      (default) no node installed
+        "auto"  resolve via `mise ls --current node` against the project
+                (mise.toml > .tool-versions > .nvmrc > .node-version >
+                 package.json devEngines.runtime)
+        else    forwarded to `mise install-into node@<value>` verbatim
+                (e.g. "22", "lts", "20.11")
+      mise itself is downloaded inline. `mise install-into` is used
+      instead of `mise install` so project mise.toml entries other
+      than node are not pulled in.
+    required: false
+    default: ""
+  run-install:
+    description: 'Run `aube install` after the binary is on PATH. Boolean string ("true"/"false").'
+    required: false
+    default: "false"
+  install-args:
+    description: "Extra arguments appended to `aube install` when run-install is true."
+    required: false
+    default: ""
+  working-directory:
+    description: "Directory to run `aube install` in and to resolve `node-version: auto` against. Defaults to the workspace root."
+    required: false
+    default: ""
+  token:
+    description: "GitHub token used for release downloads (avoids unauthenticated rate limits)."
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  version:
+    description: "Resolved aube version (without the `v` prefix)."
+    value: ${{ steps.install.outputs.version }}
+  bin-path:
+    description: "Directory containing the aube/aubr/aubx binaries."
+    value: ${{ steps.install.outputs.bin-path }}
+  node-version:
+    description: "Resolved Node.js version, or empty if node was not installed."
+    value: ${{ steps.node.outputs.version }}
+  node-bin-path:
+    description: "Directory containing the node binary, or empty if node was not installed."
+    value: ${{ steps.node.outputs.bin-path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install aube
+      id: install
+      shell: bash
+      env:
+        VERSION_INPUT: ${{ inputs.version }}
+        GH_TOKEN: ${{ inputs.token }}
+        RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: |
+        set -euo pipefail
+
+        case "$RUNNER_OS-$RUNNER_ARCH" in
+          Linux-X64)     target=x86_64-unknown-linux-gnu ;;
+          Linux-ARM64)   target=aarch64-unknown-linux-gnu ;;
+          macOS-ARM64)   target=aarch64-apple-darwin ;;
+          macOS-X64)
+            echo "::error::aube does not publish prebuilt binaries for macOS x86_64. Use macos-latest (arm64) or 'cargo install aube --locked'."
+            exit 1
+            ;;
+          Windows-X64)   target=x86_64-pc-windows-msvc ;;
+          Windows-ARM64) target=aarch64-pc-windows-msvc ;;
+          *)
+            echo "::error::Unsupported runner: $RUNNER_OS-$RUNNER_ARCH"
+            exit 1
+            ;;
+        esac
+
+        version="$VERSION_INPUT"
+        if [ -z "$version" ] || [ "$version" = "latest" ]; then
+          # Resolve via the redirect from /releases/latest -- no API auth needed.
+          location="$(curl -fsSIL -o /dev/null -w '%{url_effective}' \
+            'https://github.com/endevco/aube/releases/latest')"
+          version="${location##*/tag/}"
+          version="${version%/}"
+          if [ -z "$version" ]; then
+            echo "::error::Could not resolve latest aube release from GitHub"
+            exit 1
+          fi
+        fi
+        case "$version" in
+          v*) tag="$version"; version="${version#v}" ;;
+          *)  tag="v$version" ;;
+        esac
+
+        if [ "$RUNNER_OS" = Windows ]; then
+          ext=zip
+          bin_ext=.exe
+        else
+          ext=tar.gz
+          bin_ext=
+        fi
+        archive="aube-$tag-$target.$ext"
+        url="https://github.com/endevco/aube/releases/download/$tag/$archive"
+
+        install_dir="${RUNNER_TEMP:-/tmp}/aube-action/$version/$target"
+        rm -rf "$install_dir"
+        mkdir -p "$install_dir"
+        echo "Downloading $url"
+        auth=()
+        if [ -n "${GH_TOKEN:-}" ]; then
+          auth=(-H "Authorization: Bearer $GH_TOKEN")
+        fi
+        if [ "$ext" = zip ]; then
+          tmp="$(mktemp -d)"
+          curl -fsSL "${auth[@]}" -o "$tmp/aube.zip" "$url"
+          unzip -oq "$tmp/aube.zip" -d "$install_dir"
+          rm -rf "$tmp"
+        else
+          curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$install_dir"
+        fi
+        for bin in aube aubr aubx; do
+          chmod +x "$install_dir/$bin$bin_ext" 2>/dev/null || true
+        done
+
+        echo "$install_dir" >> "$GITHUB_PATH"
+        echo "version=$version" >> "$GITHUB_OUTPUT"
+        echo "bin-path=$install_dir" >> "$GITHUB_OUTPUT"
+
+    - name: Verify aube
+      shell: bash
+      run: aube --version
+
+    - name: Install Node.js via mise
+      id: node
+      if: inputs.node-version != ''
+      shell: bash
+      env:
+        NODE_VERSION_INPUT: ${{ inputs.node-version }}
+        RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+        WORKING_DIR: ${{ inputs.working-directory }}
+        WORKSPACE: ${{ github.workspace }}
+      run: |
+        set -euo pipefail
+
+        # Install mise. mise.run is a POSIX shell script; on Windows we fetch
+        # the standalone .exe from jdx/mise releases instead.
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          mise_dir="${RUNNER_TEMP:-/tmp}/aube-action-mise"
+          mise="$mise_dir/mise.exe"
+          if [ ! -x "$mise" ]; then
+            arch_suffix=x64
+            if [ "$RUNNER_ARCH" = "ARM64" ]; then arch_suffix=arm64; fi
+            mise_loc="$(curl -fsSIL -o /dev/null -w '%{url_effective}' \
+              'https://github.com/jdx/mise/releases/latest')"
+            mise_ver="${mise_loc##*/tag/}"
+            mkdir -p "$mise_dir"
+            curl -fsSL -o "$mise" \
+              "https://github.com/jdx/mise/releases/download/$mise_ver/mise-$mise_ver-windows-$arch_suffix.exe"
+          fi
+        else
+          if [ ! -x "$HOME/.local/bin/mise" ] && ! command -v mise >/dev/null 2>&1; then
+            curl -fsSL https://mise.run | sh
+          fi
+          if [ -x "$HOME/.local/bin/mise" ]; then
+            mise="$HOME/.local/bin/mise"
+          else
+            mise="$(command -v mise)"
+          fi
+        fi
+
+        discovery_dir="${WORKING_DIR:-$WORKSPACE}"
+        if [ -z "$discovery_dir" ]; then discovery_dir="$WORKSPACE"; fi
+
+        # Trust the workspace so a project mise.toml is read by `mise ls`.
+        export MISE_TRUSTED_CONFIG_PATHS="$discovery_dir"
+
+        if [ "$NODE_VERSION_INPUT" = "auto" ]; then
+          # CI=1 disables idiomatic version files (.nvmrc/.node-version) by
+          # default; enable them just for this discovery call so .nvmrc users
+          # work too. mise.toml still wins via normal precedence inside `ls`.
+          resolved="$(MISE_IDIOMATIC_VERSION_FILE_ENABLE_TOOLS=node \
+            "$mise" ls --current --json node --cd "$discovery_dir" 2>/dev/null \
+            | jq -r '.[0].requested_version // .[0].version // empty')"
+          if [ -z "$resolved" ]; then
+            echo "::error::node-version: auto, but no node version was found in mise.toml, .tool-versions, .nvmrc, .node-version, or package.json under $discovery_dir"
+            exit 1
+          fi
+        else
+          resolved="$NODE_VERSION_INPUT"
+        fi
+
+        # `install-into` writes a standard node tree at <dir>/{bin,lib,...}
+        # (or <dir>/node.exe at the root on Windows).
+        install_dir="${RUNNER_TEMP:-/tmp}/aube-action-node/$resolved"
+        rm -rf "$install_dir"
+        mkdir -p "$(dirname "$install_dir")"
+        "$mise" install-into "node@$resolved" "$install_dir"
+
+        if [ -x "$install_dir/bin/node" ] || [ -x "$install_dir/bin/node.exe" ]; then
+          node_bin="$install_dir/bin"
+        elif [ -x "$install_dir/node.exe" ] || [ -x "$install_dir/node" ]; then
+          node_bin="$install_dir"
+        else
+          echo "::error::Could not locate node binary under $install_dir"
+          ls -R "$install_dir" | head -40 || true
+          exit 1
+        fi
+
+        if [ -x "$node_bin/node.exe" ]; then
+          actual="$("$node_bin/node.exe" --version | sed 's/^v//')"
+        else
+          actual="$("$node_bin/node" --version | sed 's/^v//')"
+        fi
+
+        echo "$node_bin" >> "$GITHUB_PATH"
+        echo "version=$actual" >> "$GITHUB_OUTPUT"
+        echo "bin-path=$node_bin" >> "$GITHUB_OUTPUT"
+        echo "Installed node $actual at $install_dir"
+
+    - name: Run aube install
+      if: inputs.run-install == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory == '' && github.workspace || inputs.working-directory }}
+      env:
+        ARGS: ${{ inputs.install-args }}
+      run: |
+        # shellcheck disable=SC2086
+        aube install $ARGS
