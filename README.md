@@ -9,10 +9,10 @@ manager and the runtime.
 
 ```yaml
 - uses: endevco/aube-action@v1
-- run: aube install
+- run: aube ci
 ```
 
-Pin a specific aube version and run `aube install` in one go:
+Pin a specific aube version and run `aube ci` in one go:
 
 ```yaml
 - uses: endevco/aube-action@v1
@@ -47,9 +47,9 @@ Or let mise pick up the version from the project's `mise.toml`,
 |---------------------|-----------------------|-------------|
 | `version`           | `latest`              | aube version. `latest`, a semver (`1.5.1`), or a tag (`v1.5.1`). |
 | `node-version`      | _(empty)_             | `auto` to resolve from project files; otherwise forwarded to `mise install-into node@<value>`. |
-| `run-install`       | `false`               | Run `aube install` after the binary is on `PATH`. |
-| `install-args`      | _(empty)_             | Extra arguments appended to `aube install`. |
-| `working-directory` | workspace root        | Directory used for `aube install` and for `node-version: auto` discovery. |
+| `run-install`       | `false`               | Run `aube ci` after the binary is on `PATH`. |
+| `install-args`      | _(empty)_             | Extra arguments appended to `aube ci`. |
+| `working-directory` | workspace root        | Directory used for `aube ci` and for `node-version: auto` discovery. |
 | `token`             | `${{ github.token }}` | Used for the release download to avoid unauthenticated rate limits. |
 
 ## Outputs

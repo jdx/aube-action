@@ -25,15 +25,15 @@ inputs:
     required: false
     default: ""
   run-install:
-    description: 'Run `aube install` after the binary is on PATH. Boolean string ("true"/"false").'
+    description: 'Run `aube ci` after the binary is on PATH. Boolean string ("true"/"false").'
     required: false
     default: "false"
   install-args:
-    description: "Extra arguments appended to `aube install` when run-install is true."
+    description: "Extra arguments appended to `aube ci` when run-install is true."
     required: false
     default: ""
   working-directory:
-    description: "Directory to run `aube install` in and to resolve `node-version: auto` against. Defaults to the workspace root."
+    description: "Directory to run `aube ci` in and to resolve `node-version: auto` against. Defaults to the workspace root."
     required: false
     default: ""
   token:
@@ -232,7 +232,7 @@ runs:
         echo "bin-path=$node_bin" >> "$GITHUB_OUTPUT"
         echo "Installed node $actual at $install_dir"
 
-    - name: Run aube install
+    - name: Run aube ci
       if: inputs.run-install == 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory == '' && github.workspace || inputs.working-directory }}
@@ -240,4 +240,4 @@ runs:
         ARGS: ${{ inputs.install-args }}
       run: |
         # shellcheck disable=SC2086
-        aube install $ARGS
+        aube ci $ARGS
