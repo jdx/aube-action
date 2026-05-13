@@ -66,7 +66,9 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
         RUNNER_OS: ${{ runner.os }}
         RUNNER_ARCH: ${{ runner.arch }}
-      run: |
+      # Writing to GITHUB_PATH is the entire purpose of this action -- it
+      # installs aube and makes it available to subsequent steps.
+      run: | # zizmor: ignore[github-env]
         set -euo pipefail
 
         case "$RUNNER_OS-$RUNNER_ARCH" in
@@ -150,7 +152,9 @@ runs:
         RUNNER_ARCH: ${{ runner.arch }}
         WORKING_DIR: ${{ inputs.working-directory }}
         WORKSPACE: ${{ github.workspace }}
-      run: |
+      # Writing to GITHUB_PATH is the entire purpose of this step -- it
+      # installs node via mise and makes it available to subsequent steps.
+      run: | # zizmor: ignore[github-env]
         set -euo pipefail
 
         # Install mise. mise.run is a POSIX shell script; on Windows we fetch
