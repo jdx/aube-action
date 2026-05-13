@@ -6,6 +6,9 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -20,14 +23,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - id: setup
         uses: ./
       - shell: bash
+        env:
+          VERSION: ${{ steps.setup.outputs.version }}
+          BIN_PATH: ${{ steps.setup.outputs.bin-path }}
+          NODE_VERSION: ${{ steps.setup.outputs.node-version }}
         run: |
           aube --version
-          test -n "${{ steps.setup.outputs.version }}"
-          test -n "${{ steps.setup.outputs.bin-path }}"
-          test -z "${{ steps.setup.outputs.node-version }}"
+          test -n "$VERSION"
+          test -n "$BIN_PATH"
+          test -z "$NODE_VERSION"
 
   pinned:
     name: pinned aube / ${{ matrix.os }}
@@ -38,6 +47,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - uses: ./
         with:
           version: "1.5.1"
@@ -55,15 +66,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - id: setup
         uses: ./
         with:
           node-version: "22"
       - shell: bash
+        env:
+          NODE_VERSION: ${{ steps.setup.outputs.node-version }}
+          NODE_BIN_PATH: ${{ steps.setup.outputs.node-bin-path }}
         run: |
           node --version | grep -q '^v22\.'
-          test -n "${{ steps.setup.outputs.node-version }}"
-          test -n "${{ steps.setup.outputs.node-bin-path }}"
+          test -n "$NODE_VERSION"
+          test -n "$NODE_BIN_PATH"
 
   node-auto-mise-toml:
     name: node auto via mise.toml / ${{ matrix.os }}
@@ -74,6 +90,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - shell: bash
         run: |
           mkdir fixture
@@ -97,6 +115,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - shell: bash
         run: |
           mkdir fixture
@@ -113,6 +133,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - shell: bash
         run: mkdir empty
       - id: setup
@@ -122,8 +144,10 @@ jobs:
           node-version: auto
           working-directory: empty
       - shell: bash
+        env:
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
         run: |
-          if [ "${{ steps.setup.outcome }}" != "failure" ]; then
+          if [ "$SETUP_OUTCOME" != "failure" ]; then
             echo "expected the action to fail when no node version is pinned"
             exit 1
           fi
@@ -137,6 +161,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          persist-credentials: false
       - shell: bash
         run: |
           mkdir project

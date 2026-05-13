@@ -8,7 +8,11 @@ name: semantic-pr-lint
 # malformed title silently producing wrong bumps.
 
 on:
-  pull_request_target:
+  # pull_request_target is required so the PR title can be validated on PRs
+  # from forks (pull_request would not have access to the API). This job
+  # only reads the PR title -- it never checks out untrusted code, so the
+  # usual pull_request_target risks do not apply here.
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
     types:
       - opened
       - edited
