@@ -55,13 +55,15 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
+          persist-credentials: false
       - name: Move v<major> tag to ${{ needs.release-please.outputs.tag_name }}
         env:
           TAG: ${{ needs.release-please.outputs.tag_name }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN }}
         run: |
           set -euo pipefail
           major="${TAG%%.*}"
-          git fetch --tags origin
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git fetch --tags "$remote"
           git tag -f "$major" "$TAG"
-          git push -f origin "$major"
+          git push -f "$remote" "$major"
