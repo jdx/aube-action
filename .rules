@@ -2,7 +2,7 @@ project:
   name: aube-action
   kind: GitHub Action (composite)
   language: bash + YAML
-  deliverable: action.yml at repo root, consumed as endevco/aube-action@vN
+  deliverable: action.yml at repo root, consumed as jdx/aube-action@vN
 
 layout:
   action: action.yml (composite; steps -- install aube, verify, install Node via mise [optional], run aube install [optional])
