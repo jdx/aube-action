@@ -8,14 +8,14 @@ manager and the runtime.
 ## Usage
 
 ```yaml
-- uses: endevco/aube-action@v1
+- uses: jdx/aube-action@v1
 - run: aube ci
 ```
 
 Pin a specific aube version and run `aube ci` in one go:
 
 ```yaml
-- uses: endevco/aube-action@v1
+- uses: jdx/aube-action@v1
   with:
     version: 1.5.1
     run-install: true
@@ -24,7 +24,7 @@ Pin a specific aube version and run `aube ci` in one go:
 Install Node.js too — explicit version:
 
 ```yaml
-- uses: endevco/aube-action@v1
+- uses: jdx/aube-action@v1
   with:
     node-version: "22"
     run-install: true
@@ -35,7 +35,7 @@ Or let mise pick up the version from the project's `mise.toml`,
 `package.json` `devEngines.runtime`:
 
 ```yaml
-- uses: endevco/aube-action@v1
+- uses: jdx/aube-action@v1
   with:
     node-version: auto
     run-install: true
