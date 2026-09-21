@@ -26,7 +26,7 @@ jobs:
         with:
           persist-credentials: false
       - id: setup
-        uses: ./
+        uses: $/
       - shell: bash
         env:
           VERSION: ${{ steps.setup.outputs.version }}
@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - uses: ./
+      - uses: $/
         with:
           version: "1.5.1"
       - shell: bash
@@ -69,7 +69,7 @@ jobs:
         with:
           persist-credentials: false
       - id: setup
-        uses: ./
+        uses: $/
         with:
           node-version: "22"
       - shell: bash
@@ -99,7 +99,7 @@ jobs:
           [tools]
           node = "20"
           EOF
-      - uses: ./
+      - uses: $/
         with:
           node-version: auto
           working-directory: fixture
@@ -121,7 +121,7 @@ jobs:
         run: |
           mkdir fixture
           echo "22" > fixture/.nvmrc
-      - uses: ./
+      - uses: $/
         with:
           node-version: auto
           working-directory: fixture
@@ -139,7 +139,7 @@ jobs:
         run: mkdir empty
       - id: setup
         continue-on-error: true
-        uses: ./
+        uses: $/
         with:
           node-version: auto
           working-directory: empty
@@ -213,7 +213,7 @@ jobs:
               dependencies:
                 is-number: 6.0.0
           EOF
-      - uses: ./
+      - uses: $/
         with:
           node-version: "22"
           working-directory: project
