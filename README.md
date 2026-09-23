@@ -84,7 +84,7 @@ Or let mise pick up the version from the project's `mise.toml`,
   never run, so a project's `mise.toml` is consulted for discovery only
   — unrelated tools listed there are not installed.
 
-## Discussion
+## Bugs and questions
 
-aube uses GitHub Discussions for bug reports and questions:
+Report aube bugs and ask questions in GitHub Discussions:
 <https://github.com/endevco/aube/discussions>.
