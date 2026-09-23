@@ -86,5 +86,5 @@ Or let mise pick up the version from the project's `mise.toml`,
 
 ## Bugs and questions
 
-Report aube bugs in GitHub Issues: <https://github.com/aubepkg/aube/issues>.
-Ask questions in GitHub Discussions: <https://github.com/aubepkg/aube/discussions>.
+Report aube bugs and ask questions in GitHub Discussions:
+<https://github.com/endevco/aube/discussions>.
