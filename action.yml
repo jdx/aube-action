@@ -25,13 +25,34 @@ inputs:
     required: false
     default: ""
   run-install:
-    description: 'Run `aube ci` after the binary is on PATH. Boolean string ("true"/"false").'
+    description: 'Run `aube ci` after the binary is on PATH. Boolean string ("true"/"false"). With `cache: true`, runs `aube install --frozen-lockfile` instead.'
     required: false
     default: "false"
   install-args:
-    description: "Extra arguments appended to `aube ci` when run-install is true."
+    description: "Extra arguments appended to the install command when run-install is true."
     required: false
     default: ""
+  cache:
+    description: |
+      Cache node_modules with actions/cache. Boolean string ("true"/"false").
+      Requires run-install: true. The install runs as
+      `aube install --frozen-lockfile`, which keeps a restored node_modules
+      that matches the lockfile. `aube ci` would delete it. The cache is
+      saved right after the install, only when the key missed. The key
+      covers OS, arch, Node.js version, aube version, checkout path, and
+      every lockfile aube reads (aube-lock.yaml, pnpm-lock.yaml, bun.lock,
+      yarn.lock, npm-shrinkwrap.json, package-lock.json), package.json,
+      aube-workspace.yaml, pnpm-workspace.yaml, and .npmrc under
+      working-directory, plus the install-args and cache-path inputs.
+    required: false
+    default: "false"
+  cache-path:
+    description: |
+      Newline-separated directories to cache, relative to working-directory.
+      Defaults to node_modules. In a workspace, add each member's
+      node_modules (globs such as packages/*/node_modules work).
+    required: false
+    default: node_modules
   working-directory:
     description: "Directory to run `aube ci` in and to resolve `node-version: auto` against. Defaults to the workspace root."
     required: false
@@ -54,6 +75,9 @@ outputs:
   node-bin-path:
     description: "Directory containing the node binary, or empty if node was not installed."
     value: ${{ steps.node.outputs.bin-path }}
+  cache-hit:
+    description: '"true" when node_modules was restored from an exact cache match, otherwise "false" or empty.'
+    value: ${{ steps.cache-restore.outputs.cache-hit }}
 
 runs:
   using: composite
@@ -232,12 +256,109 @@ runs:
         echo "bin-path=$node_bin" >> "$GITHUB_OUTPUT"
         echo "Installed node $actual at $install_dir"
 
-    - name: Run aube ci
+    - name: Compute node_modules cache key
+      id: cache-key
+      if: inputs.cache == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory == '' && github.workspace || inputs.working-directory }}
+      env:
+        RUN_INSTALL: ${{ inputs.run-install }}
+        INSTALL_ARGS: ${{ inputs.install-args }}
+        CACHE_PATH: ${{ inputs.cache-path }}
+        WORKING_DIR: ${{ inputs.working-directory }}
+        AUBE_VERSION: ${{ steps.install.outputs.version }}
+        NODE_VERSION: ${{ steps.node.outputs.version }}
+        RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: |
+        set -euo pipefail
+
+        if [ "$RUN_INSTALL" != "true" ]; then
+          echo "::error::cache: true requires run-install: true so the action can install with 'aube install --frozen-lockfile' and save the result."
+          exit 1
+        fi
+
+        if [ -z "$NODE_VERSION" ]; then
+          if ! command -v node >/dev/null 2>&1; then
+            echo "::error::cache: true needs Node.js to compute the cache key. Set node-version or install Node.js before this action."
+            exit 1
+          fi
+          NODE_VERSION="$(node --version | sed 's/^v//')"
+        fi
+
+        if command -v sha256sum >/dev/null 2>&1; then
+          sha() { sha256sum | cut -c1-64; }
+        else
+          sha() { shasum -a 256 | cut -c1-64; }
+        fi
+
+        # Restored links can hold absolute paths (Windows junctions,
+        # transitive link: deps), so the checkout path is part of the key.
+        path_hash="$(pwd | sha | cut -c1-16)"
+
+        files="$(find . -name node_modules -prune -o -type f \
+          \( -name aube-lock.yaml -o -name pnpm-lock.yaml -o -name bun.lock \
+          -o -name yarn.lock -o -name npm-shrinkwrap.json -o -name package-lock.json \
+          -o -name aube-workspace.yaml -o -name pnpm-workspace.yaml -o -name .npmrc \
+          -o -name package.json \) \
+          -print | LC_ALL=C sort)"
+        if ! grep -Eq '/(aube-lock\.yaml|pnpm-lock\.yaml|bun\.lock|yarn\.lock|npm-shrinkwrap\.json|package-lock\.json)$' <<< "$files"; then
+          echo "::error::cache: true found no lockfile under ${WORKING_DIR:-the workspace root}. Commit the lockfile before enabling the cache."
+          exit 1
+        fi
+        # Hash names and contents so a moved or renamed file changes the key.
+        lock_hash="$(while IFS= read -r f; do
+          printf '%s\n' "$f"
+          sha < "$f"
+        done <<< "$files" | sha)"
+
+        prefix="${WORKING_DIR:-.}"
+        paths=""
+        while IFS= read -r p; do
+          p="${p%$'\r'}"
+          [ -z "$p" ] && continue
+          paths+="$prefix/$p"$'\n'
+        done <<< "$CACHE_PATH"
+
+        # install-args can change the installed tree (e.g. --prod) and
+        # cache-path changes what gets saved, so both are part of the key.
+        inputs_hash="$(printf '%s\n%s' "$INSTALL_ARGS" "$CACHE_PATH" | sha | cut -c1-16)"
+
+        key="aube-nm-v1-$RUNNER_OS-$RUNNER_ARCH-node$NODE_VERSION-aube$AUBE_VERSION-$path_hash-$inputs_hash-$lock_hash"
+        echo "key=$key" >> "$GITHUB_OUTPUT"
+        {
+          echo "paths<<AUBE_CACHE_PATHS_EOF"
+          printf '%s' "$paths"
+          echo "AUBE_CACHE_PATHS_EOF"
+        } >> "$GITHUB_OUTPUT"
+        echo "Cache key: $key"
+
+    - name: Restore node_modules cache
+      id: cache-restore
+      if: inputs.cache == 'true'
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.cache-key.outputs.paths }}
+        key: ${{ steps.cache-key.outputs.key }}
+
+    - name: Run aube install
       if: inputs.run-install == 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory == '' && github.workspace || inputs.working-directory }}
       env:
         ARGS: ${{ inputs.install-args }}
+        CACHE: ${{ inputs.cache }}
       run: |
         # shellcheck disable=SC2086
-        aube ci $ARGS
+        if [ "$CACHE" = "true" ]; then
+          aube install --frozen-lockfile $ARGS
+        else
+          aube ci $ARGS
+        fi
+
+    - name: Save node_modules cache
+      if: inputs.cache == 'true' && steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.cache-key.outputs.paths }}
+        key: ${{ steps.cache-key.outputs.key }}

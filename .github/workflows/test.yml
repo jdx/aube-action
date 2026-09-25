@@ -225,6 +225,125 @@ jobs:
           test -f node_modules/is-odd/package.json
           node -e 'process.exit(require("is-odd")(3) ? 0 : 1)'
 
+  cache:
+    name: cache / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - shell: bash
+        run: |
+          mkdir project
+          cat > project/package.json <<'EOF'
+          {
+            "name": "aube-action-test",
+            "version": "0.0.0",
+            "private": true,
+            "dependencies": {
+              "is-odd": "3.0.1"
+            }
+          }
+          EOF
+          cat > project/aube-lock.yaml <<'EOF'
+          lockfileVersion: '9.0'
+
+          settings:
+            autoInstallPeers: true
+            excludeLinksFromLockfile: false
+
+          time:
+            is-number@6.0.0: 2018-03-31T17:02:39.953Z
+            is-odd@3.0.1: 2018-05-31T20:04:53.306Z
+
+          importers:
+
+            .:
+              dependencies:
+                is-odd:
+                  specifier: 3.0.1
+                  version: 3.0.1
+
+          packages:
+
+            is-number@6.0.0:
+              resolution: {integrity: sha512-Wu1VHeILBK8KAWJUAiSZQX94GmOE45Rg6/538fKwiloUu21KncEkYGPqob2oSZ5mUT73vLGrHQjKw3KMPwfDzg==}
+              engines: {node: '>=0.10.0'}
+
+            is-odd@3.0.1:
+              resolution: {integrity: sha512-CQpnWPrDwmP1+SMHXZhtLtJv90yiyVfluGsX5iNCVkrhQtU3TQHsUWPG9wkdk9Lgd5yNpAg9jQEo90CBaXgWMA==}
+              engines: {node: '>=4'}
+
+          snapshots:
+
+            is-number@6.0.0: {}
+
+            is-odd@3.0.1:
+              dependencies:
+                is-number: 6.0.0
+          EOF
+      # .npmrc is part of the cache key; a per-run comment keeps reruns
+      # and other runs from hitting an earlier cache entry.
+      - shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: echo "# aube-action test $RUN_ID" > project/.npmrc
+      - id: first
+        uses: $/
+        with:
+          node-version: "22"
+          working-directory: project
+          run-install: true
+          cache: true
+      - shell: bash
+        working-directory: project
+        env:
+          CACHE_HIT: ${{ steps.first.outputs.cache-hit }}
+        run: |
+          test "$CACHE_HIT" != "true"
+          node -e 'process.exit(require("is-odd")(3) ? 0 : 1)'
+          rm -rf node_modules
+      - id: second
+        uses: $/
+        with:
+          node-version: "22"
+          working-directory: project
+          run-install: true
+          cache: true
+      - shell: bash
+        working-directory: project
+        env:
+          CACHE_HIT: ${{ steps.second.outputs.cache-hit }}
+        run: |
+          test "$CACHE_HIT" = "true"
+          node -e 'process.exit(require("is-odd")(3) ? 0 : 1)'
+
+  cache-requires-run-install:
+    name: cache fails without run-install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - id: setup
+        continue-on-error: true
+        uses: $/
+        with:
+          node-version: "22"
+          cache: true
+      - shell: bash
+        env:
+          SETUP_OUTCOME: ${{ steps.setup.outcome }}
+        run: |
+          if [ "$SETUP_OUTCOME" != "failure" ]; then
+            echo "expected the action to fail when cache is set without run-install"
+            exit 1
+          fi
+
   # Single-name gate: aggregates every matrix combination above into one
   # required status check. If any upstream job failed, was cancelled, or
   # was skipped, this step exits non-zero so the PR is blocked. Lets the
@@ -238,6 +357,8 @@ jobs:
       - node-auto-nvmrc
       - node-auto-missing-errors
       - run-install
+      - cache
+      - cache-requires-run-install
     runs-on: ubuntu-latest
     timeout-minutes: 2
     if: always()
