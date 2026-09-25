@@ -61,8 +61,9 @@ the result immediately, before later steps can write into `node_modules`.
 The cache key includes the runner OS and architecture, the Node.js and aube
 versions, the checkout path, and every lockfile aube reads (`aube-lock.yaml`,
 `pnpm-lock.yaml`, `bun.lock`, `yarn.lock`, `npm-shrinkwrap.json`,
-`package-lock.json`), `pnpm-workspace.yaml`, and `.npmrc` under
-`working-directory` (outside `node_modules`). The Node.js
+`package-lock.json`), every `package.json`, `aube-workspace.yaml`,
+`pnpm-workspace.yaml`, and `.npmrc` under `working-directory` (outside
+`node_modules`), and the `install-args` and `cache-path` inputs. The Node.js
 version matters because dependency builds can compile native addons for one
 Node.js ABI. The checkout path matters because some links in `node_modules`
 store absolute paths. There is no partial-match fallback: a restored tree is

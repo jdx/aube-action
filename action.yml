@@ -41,8 +41,9 @@ inputs:
       saved right after the install, only when the key missed. The key
       covers OS, arch, Node.js version, aube version, checkout path, and
       every lockfile aube reads (aube-lock.yaml, pnpm-lock.yaml, bun.lock,
-      yarn.lock, npm-shrinkwrap.json, package-lock.json), pnpm-workspace.yaml,
-      and .npmrc under working-directory.
+      yarn.lock, npm-shrinkwrap.json, package-lock.json), package.json,
+      aube-workspace.yaml, pnpm-workspace.yaml, and .npmrc under
+      working-directory, plus the install-args and cache-path inputs.
     required: false
     default: "false"
   cache-path:
@@ -262,6 +263,7 @@ runs:
       working-directory: ${{ inputs.working-directory == '' && github.workspace || inputs.working-directory }}
       env:
         RUN_INSTALL: ${{ inputs.run-install }}
+        INSTALL_ARGS: ${{ inputs.install-args }}
         CACHE_PATH: ${{ inputs.cache-path }}
         WORKING_DIR: ${{ inputs.working-directory }}
         AUBE_VERSION: ${{ steps.install.outputs.version }}
@@ -297,7 +299,8 @@ runs:
         files="$(find . -name node_modules -prune -o -type f \
           \( -name aube-lock.yaml -o -name pnpm-lock.yaml -o -name bun.lock \
           -o -name yarn.lock -o -name npm-shrinkwrap.json -o -name package-lock.json \
-          -o -name pnpm-workspace.yaml -o -name .npmrc \) \
+          -o -name aube-workspace.yaml -o -name pnpm-workspace.yaml -o -name .npmrc \
+          -o -name package.json \) \
           -print | LC_ALL=C sort)"
         if ! grep -Eq '/(aube-lock\.yaml|pnpm-lock\.yaml|bun\.lock|yarn\.lock|npm-shrinkwrap\.json|package-lock\.json)$' <<< "$files"; then
           echo "::error::cache: true found no lockfile under ${WORKING_DIR:-the workspace root}. Commit the lockfile before enabling the cache."
@@ -317,7 +320,11 @@ runs:
           paths+="$prefix/$p"$'\n'
         done <<< "$CACHE_PATH"
 
-        key="aube-nm-v1-$RUNNER_OS-$RUNNER_ARCH-node$NODE_VERSION-aube$AUBE_VERSION-$path_hash-$lock_hash"
+        # install-args can change the installed tree (e.g. --prod) and
+        # cache-path changes what gets saved, so both are part of the key.
+        inputs_hash="$(printf '%s\n%s' "$INSTALL_ARGS" "$CACHE_PATH" | sha | cut -c1-16)"
+
+        key="aube-nm-v1-$RUNNER_OS-$RUNNER_ARCH-node$NODE_VERSION-aube$AUBE_VERSION-$path_hash-$inputs_hash-$lock_hash"
         echo "key=$key" >> "$GITHUB_OUTPUT"
         {
           echo "paths<<AUBE_CACHE_PATHS_EOF"
