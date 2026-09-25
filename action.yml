@@ -40,8 +40,9 @@ inputs:
       that matches the lockfile. `aube ci` would delete it. The cache is
       saved right after the install, only when the key missed. The key
       covers OS, arch, Node.js version, aube version, checkout path, and
-      every aube-lock.yaml, pnpm-workspace.yaml, and .npmrc under
-      working-directory.
+      every lockfile aube reads (aube-lock.yaml, pnpm-lock.yaml, bun.lock,
+      yarn.lock, npm-shrinkwrap.json, package-lock.json), pnpm-workspace.yaml,
+      and .npmrc under working-directory.
     required: false
     default: "false"
   cache-path:
@@ -294,10 +295,12 @@ runs:
         path_hash="$(pwd | sha | cut -c1-16)"
 
         files="$(find . -name node_modules -prune -o -type f \
-          \( -name aube-lock.yaml -o -name pnpm-workspace.yaml -o -name .npmrc \) \
+          \( -name aube-lock.yaml -o -name pnpm-lock.yaml -o -name bun.lock \
+          -o -name yarn.lock -o -name npm-shrinkwrap.json -o -name package-lock.json \
+          -o -name pnpm-workspace.yaml -o -name .npmrc \) \
           -print | LC_ALL=C sort)"
-        if ! grep -q '/aube-lock\.yaml$' <<< "$files"; then
-          echo "::error::cache: true found no aube-lock.yaml under ${WORKING_DIR:-the workspace root}. Commit the lockfile before enabling the cache."
+        if ! grep -Eq '/(aube-lock\.yaml|pnpm-lock\.yaml|bun\.lock|yarn\.lock|npm-shrinkwrap\.json|package-lock\.json)$' <<< "$files"; then
+          echo "::error::cache: true found no lockfile under ${WORKING_DIR:-the workspace root}. Commit the lockfile before enabling the cache."
           exit 1
         fi
         # Hash names and contents so a moved or renamed file changes the key.
