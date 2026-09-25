@@ -1,7 +1,7 @@
 name: semantic-pr-lint
 
-# Validates that PR titles use a Conventional Commit type so release-please
-# can map them to a CHANGELOG section and bump the version correctly
+# Validates that PR titles use a Conventional Commit type so git-cliff
+# (release-plz) can map them to a CHANGELOG section and bump the version correctly
 # (feat -> minor, fix -> patch, BREAKING CHANGE / `!` -> major). Repos in
 # this org use squash-merge, so the PR title becomes the main-branch
 # commit subject; this lint protects the release pipeline from a
