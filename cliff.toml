@@ -40,15 +40,14 @@ body = """
         {% endif -%}
     {% endfor -%}
 {% endfor %}
-{% if github.contributors | filter(attribute="is_first_time", value=true) | length != 0 -%}
+{% set new_contributors = github.contributors | filter(attribute="is_first_time", value=true) | filter(attribute="username") -%}
+{% if new_contributors | length != 0 -%}
 ### New Contributors
-{% for contributor in github.contributors | filter(attribute="is_first_time", value=true) %}\
-{% if contributor.username %}
+{% for contributor in new_contributors %}
   * @{{ contributor.username }} made their first contribution
     {%- if contributor.pr_number %} in \
       [#{{ contributor.pr_number }}]($REPO/pull/{{ contributor.pr_number }})\
     {% endif %}\
-{% endif %}\
 {% endfor %}
 
 {% endif -%}
