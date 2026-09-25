@@ -18,8 +18,21 @@ MAJOR_VERSION="${VERSION%%.*}"
 # token isn't written to .git/config and raw `git push` would 403.
 gh auth setup-git
 
-git tag "$VERSION" "$SHA" || echo "Tag $VERSION already exists locally"
-git push origin "$VERSION" || echo "Tag $VERSION already exists on remote"
+# A rerun may find the tag already created; anything else pointing it at a
+# different commit must stop before the major tag moves, or @vN and
+# @vX.Y.Z would ship different code.
+git fetch --force origin "refs/tags/$VERSION:refs/tags/$VERSION" 2>/dev/null || true
+if git rev-parse -q --verify "refs/tags/$VERSION" >/dev/null; then
+	tagged="$(git rev-list -n 1 "$VERSION")"
+	if [ "$tagged" != "$SHA" ]; then
+		echo "::error::$VERSION already points at $tagged, not the merged release commit $SHA"
+		exit 1
+	fi
+	echo "Tag $VERSION already exists at $SHA"
+else
+	git tag "$VERSION" "$SHA"
+fi
+git push origin "refs/tags/$VERSION"
 
 git tag -f "$MAJOR_VERSION" "$SHA"
 git push -f origin "$MAJOR_VERSION"

@@ -17,10 +17,12 @@ if [ -n "$latest_tag" ]; then
 	echo "Found $commits_since_release commits since $latest_tag"
 fi
 
-# A merged release PR is tagged by release.yml; don't open another one for it.
-head_subject="$(git log -1 --format=%s)"
-if [[ "$head_subject" =~ ^chore:\ release\ v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
-	echo "HEAD is a release commit; release.yml creates the release."
+# A merged release PR is tagged by release.yml. Until that tag exists, any
+# release commit since the last tag means a release is still in flight, even
+# if other commits landed on top of it; don't open another PR for it.
+pending_release="$(git log --format=%s ${latest_tag:+"$latest_tag"..HEAD} | grep -E '^chore: release v[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+if [ -n "$pending_release" ]; then
+	echo "'$pending_release' is merged but not tagged yet; release.yml creates the release."
 	exit 0
 fi
 
