@@ -14,7 +14,7 @@ VERSION="${BASH_REMATCH[1]}"
 MAJOR_VERSION="${VERSION%%.*}"
 
 # Configure git to use gh's credential helper. The checkout step uses
-# persist-credentials: false (per zizmor's artipacked audit), so the
+# persist-credentials: false (jactionlint's artipacked rule), so the
 # token isn't written to .git/config and raw `git push` would 403.
 gh auth setup-git
 

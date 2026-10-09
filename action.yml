@@ -92,7 +92,8 @@ runs:
         RUNNER_ARCH: ${{ runner.arch }}
       # Writing to GITHUB_PATH is the entire purpose of this action -- it
       # installs aube and makes it available to subsequent steps.
-      run: | # zizmor: ignore[github-env]
+      # jactionlint ignore=github-env
+      run: |
         set -euo pipefail
 
         case "$RUNNER_OS-$RUNNER_ARCH" in
@@ -178,7 +179,10 @@ runs:
         WORKSPACE: ${{ github.workspace }}
       # Writing to GITHUB_PATH is the entire purpose of this step -- it
       # installs node via mise and makes it available to subsequent steps.
-      run: | # zizmor: ignore[github-env]
+      # mise.run is mise's documented installer and the runner has no mise yet,
+      # so there is no mise.lock to verify the download against.
+      # jactionlint ignore=github-env,unverified-download
+      run: |
         set -euo pipefail
 
         # Install mise. mise.run is a POSIX shell script; on Windows we fetch
@@ -241,7 +245,7 @@ runs:
           node_bin="$install_dir"
         else
           echo "::error::Could not locate node binary under $install_dir"
-          ls -R "$install_dir" | head -40 || true
+          find "$install_dir" | head -40 || true
           exit 1
         fi
 
