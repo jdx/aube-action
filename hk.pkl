@@ -16,19 +16,6 @@ local linters = new Mapping<String, Step> {
     }
 }
 
-// The online checks (impostor-commit, known-vulnerable-actions, ...) replace zizmor's online
-// audits. They need GITHUB_TOKEN, so they run in `hk check` (CI) but not in pre-commit/fix.
-local onlineLinters = new Mapping<String, Step> {
-    ["jactionlint-online"] {
-        glob = List(".github/workflows/*.yml", ".github/workflows/*.yaml", "action.yml", "action.yaml", ".github/actions/**/action.yml", ".github/actions/**/action.yaml")
-        batch = true
-        check = new CommandSpec {
-            command = "jactionlint --online {{ files }}"
-            effect = "read"
-        }
-    }
-}
-
 hooks {
     ["pre-commit"] {
         fix = true
@@ -40,9 +27,6 @@ hooks {
         steps = linters
     }
     ["check"] {
-        steps = new Mapping<String, Step> {
-            ...linters
-            ...onlineLinters
-        }
+        steps = linters
     }
 }

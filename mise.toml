@@ -6,4 +6,4 @@ gh = 'latest'
 communique = { version = 'latest', minimum_release_age = '0s' }
 hk = { version = 'latest', minimum_release_age = '0s' }
 pkl = 'latest'
-jactionlint = 'latest'
+jactionlint = '2.1.0'

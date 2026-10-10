@@ -9,9 +9,7 @@ name: release-plz
 # don't trigger downstream workflows, so test.yml wouldn't run on the release
 # PR.
 
-permissions:
-  pull-requests: write
-  contents: write
+permissions: {}
 
 on:
   workflow_dispatch:
@@ -28,6 +26,9 @@ concurrency:
 jobs:
   release-plz:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

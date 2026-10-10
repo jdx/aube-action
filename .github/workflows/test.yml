@@ -362,9 +362,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
-      # --online needs a token (jactionlint's impostor-commit, known-vulnerable-actions, ...)
+      # online jactionlint checks (impostor commits, known-vulnerable actions, ...) run in CI only
       - run: mise x hk -- hk check --all
         env:
+          JACTIONLINT_ONLINE: 1
           GITHUB_TOKEN: ${{ github.token }}
 
   # Single-name gate: aggregates every matrix combination above into one
