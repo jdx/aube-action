@@ -1,6 +1,15 @@
 # Changelog
 
 ---
+## [1.1.1](https://github.com/jdx/aube-action/compare/v1.1.0..v1.1.1) - 2026-10-10
+
+### ⚙️ Miscellaneous Tasks
+
+- **(ci)** lint workflows with jactionlint (#22) by [@jdx](https://github.com/jdx) in [#22](https://github.com/jdx/aube-action/pull/22)
+- **(ci)** switch to jactionlint v2 and drop zizmor (#25) by [@jdx](https://github.com/jdx) in [#25](https://github.com/jdx/aube-action/pull/25)
+- require zizmor in final (#24) by [@jdx](https://github.com/jdx) in [#24](https://github.com/jdx/aube-action/pull/24)
+
+---
 ## [1.1.0](https://github.com/jdx/aube-action/compare/v1.0.0..v1.1.0) - 2026-09-25
 
 ### 🚀 Features
@@ -27,7 +36,7 @@
 
 ### New Contributors
 
-* @jdx made their first contribution in [#19](https://github.com/jdx/aube-action/pull/19)
+* @jdx made their first contribution in [#20](https://github.com/jdx/aube-action/pull/20)
 * @renovate[bot] made their first contribution in [#16](https://github.com/jdx/aube-action/pull/16)
 * @mrazauskas made their first contribution in [#5](https://github.com/jdx/aube-action/pull/5)
 
