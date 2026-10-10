@@ -362,7 +362,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: jdx/mise-action@9149ea85001c7435d5a66bb127d6a1b6227cb0a5 # v5.0.0
+      # --online needs a token (jactionlint's impostor-commit, known-vulnerable-actions, ...)
       - run: mise x hk -- hk check --all
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
   # Single-name gate: aggregates every matrix combination above into one
   # required status check. If any upstream job failed, was cancelled, or
