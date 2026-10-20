@@ -82,17 +82,13 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Install aube
-      id: install
+    - name: Resolve aube release
+      id: resolve
       shell: bash
       env:
         VERSION_INPUT: ${{ inputs.version }}
-        GH_TOKEN: ${{ inputs.token }}
         RUNNER_OS: ${{ runner.os }}
         RUNNER_ARCH: ${{ runner.arch }}
-      # Writing to GITHUB_PATH is the entire purpose of this action -- it
-      # installs aube and makes it available to subsequent steps.
-      # jactionlint ignore=github-env
       run: |
         set -euo pipefail
 
@@ -129,6 +125,36 @@ runs:
           *)  tag="v$version" ;;
         esac
 
+        {
+          echo "version=$version"
+          echo "tag=$tag"
+          echo "target=$target"
+          echo "install-dir=${RUNNER_TEMP:-/tmp}/aube-action/$version/$target"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Restore aube cache
+      id: cache-aube
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.resolve.outputs.install-dir }}
+        key: aube-bin-v1-${{ runner.os }}-${{ steps.resolve.outputs.target }}-${{ steps.resolve.outputs.version }}
+
+    - name: Install aube
+      id: install
+      shell: bash
+      env:
+        VERSION: ${{ steps.resolve.outputs.version }}
+        TAG: ${{ steps.resolve.outputs.tag }}
+        TARGET: ${{ steps.resolve.outputs.target }}
+        INSTALL_DIR: ${{ steps.resolve.outputs.install-dir }}
+        GH_TOKEN: ${{ inputs.token }}
+        RUNNER_OS: ${{ runner.os }}
+      # Writing to GITHUB_PATH is the entire purpose of this action -- it
+      # installs aube and makes it available to subsequent steps.
+      # jactionlint ignore=github-env
+      run: |
+        set -euo pipefail
+
         if [ "$RUNNER_OS" = Windows ]; then
           ext=zip
           bin_ext=.exe
@@ -136,15 +162,15 @@ runs:
           ext=tar.gz
           bin_ext=
         fi
-        archive="aube-$tag-$target.$ext"
-        url="https://github.com/endevco/aube/releases/download/$tag/$archive"
+        url="https://github.com/endevco/aube/releases/download/$TAG/aube-$TAG-$TARGET.$ext"
 
-        install_dir="${RUNNER_TEMP:-/tmp}/aube-action/$version/$target"
-        if [ -x "$install_dir/aube$bin_ext" ]; then
-          echo "aube $version already installed at $install_dir"
+        # A restored cache or an earlier use of this action in the same job
+        # leaves the binary in place; skip the download in both cases.
+        if [ -x "$INSTALL_DIR/aube$bin_ext" ]; then
+          echo "aube $VERSION already installed at $INSTALL_DIR"
         else
-          rm -rf "$install_dir"
-          mkdir -p "$install_dir"
+          rm -rf "$INSTALL_DIR"
+          mkdir -p "$INSTALL_DIR"
           echo "Downloading $url"
           auth=()
           if [ -n "${GH_TOKEN:-}" ]; then
@@ -153,19 +179,26 @@ runs:
           if [ "$ext" = zip ]; then
             tmp="$(mktemp -d)"
             curl -fsSL "${auth[@]}" -o "$tmp/aube.zip" "$url"
-            unzip -oq "$tmp/aube.zip" -d "$install_dir"
+            unzip -oq "$tmp/aube.zip" -d "$INSTALL_DIR"
             rm -rf "$tmp"
           else
-            curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$install_dir"
+            curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$INSTALL_DIR"
           fi
           for bin in aube aubr aubx; do
-            chmod +x "$install_dir/$bin$bin_ext" 2>/dev/null || true
+            chmod +x "$INSTALL_DIR/$bin$bin_ext" 2>/dev/null || true
           done
         fi
 
-        echo "$install_dir" >> "$GITHUB_PATH"
-        echo "version=$version" >> "$GITHUB_OUTPUT"
-        echo "bin-path=$install_dir" >> "$GITHUB_OUTPUT"
+        echo "$INSTALL_DIR" >> "$GITHUB_PATH"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+        echo "bin-path=$INSTALL_DIR" >> "$GITHUB_OUTPUT"
+
+    - name: Save aube cache
+      if: steps.cache-aube.outputs.cache-hit != 'true'
+      uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ${{ steps.resolve.outputs.install-dir }}
+        key: aube-bin-v1-${{ runner.os }}-${{ steps.resolve.outputs.target }}-${{ steps.resolve.outputs.version }}
 
     - name: Verify aube
       shell: bash

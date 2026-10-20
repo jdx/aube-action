@@ -12,6 +12,10 @@ manager and the runtime.
 - run: aube ci
 ```
 
+The aube binary is cached with [`actions/cache`](https://github.com/actions/cache)
+per runner OS, architecture, and resolved aube version, so later runs skip the
+download. Using the action more than once in a job reuses the installed binary.
+
 Pin a specific aube version and run `aube ci` in one go:
 
 ```yaml
