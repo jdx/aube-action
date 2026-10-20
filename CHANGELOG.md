@@ -1,6 +1,25 @@
 # Changelog
 
 ---
+## [1.1.1](https://github.com/jdx/aube-action/compare/v1.1.0..v1.1.1) - 2026-10-20
+
+### 🐛 Bug Fixes
+
+- reuse and cache the aube binary instead of re-downloading it (#33) by [@jdx](https://github.com/jdx) in [#33](https://github.com/jdx/aube-action/pull/33)
+
+### ⚙️ Miscellaneous Tasks
+
+- **(ci)** lint workflows with jactionlint (#22) by [@jdx](https://github.com/jdx) in [#22](https://github.com/jdx/aube-action/pull/22)
+- **(ci)** switch to jactionlint v2 and drop zizmor (#25) by [@jdx](https://github.com/jdx) in [#25](https://github.com/jdx/aube-action/pull/25)
+- **(release)** shorten minimum release age to 2 days by [@jdx](https://github.com/jdx) in [b0da5c7](https://github.com/jdx/aube-action/commit/b0da5c751e69212892b65717ea0f68ff2bab2b65)
+- require zizmor in final (#24) by [@jdx](https://github.com/jdx) in [#24](https://github.com/jdx/aube-action/pull/24)
+- stop restoring caches in release jobs (#29) by [@jdx](https://github.com/jdx) in [#29](https://github.com/jdx/aube-action/pull/29)
+
+### 🛡️ Security
+
+- verify the aube download against its signed packslip (#34) by [@jdx](https://github.com/jdx) in [#34](https://github.com/jdx/aube-action/pull/34)
+
+---
 ## [1.1.0](https://github.com/jdx/aube-action/compare/v1.0.0..v1.1.0) - 2026-09-25
 
 ### 🚀 Features
@@ -27,7 +46,7 @@
 
 ### New Contributors
 
-* @jdx made their first contribution in [#19](https://github.com/jdx/aube-action/pull/19)
+* @jdx made their first contribution in [#20](https://github.com/jdx/aube-action/pull/20)
 * @renovate[bot] made their first contribution in [#16](https://github.com/jdx/aube-action/pull/16)
 * @mrazauskas made their first contribution in [#5](https://github.com/jdx/aube-action/pull/5)
 
