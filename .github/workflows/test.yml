@@ -39,6 +39,19 @@ jobs:
           test -n "$BIN_PATH"
           test -z "$NODE_VERSION"
 
+  dist:
+    name: dist/verify.mjs is up to date
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Rebuild the verifier bundle
+        run: ./verify/build.sh
+      - name: Fail if the committed bundle differs
+        run: git diff --exit-code -- dist
+
   pinned:
     name: pinned aube / ${{ matrix.os }}
     strategy:
@@ -440,6 +453,7 @@ jobs:
     needs:
       - hk
       - default
+      - dist
       - pinned
       - reuse
       - aube-cache

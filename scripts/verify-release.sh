@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Verify a downloaded aube archive against the release's signed packslip.
 # Usage: verify-release.sh <bundle> <archive-path> <archive-name> <tag>
-# The packslip npm package needs a recent Node.js; use the runner's when it
+# The bundled packslip verifier needs a recent Node.js; use the runner's when it
 # qualifies, otherwise install a private one with mise.
 set -euo pipefail
 
-verify_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../verify" && pwd)"
+# dist/verify.mjs is a committed bundle, built by verify/build.sh.
+verify_js="$(cd "$(dirname "${BASH_SOURCE[0]}")/../dist" && pwd)/verify.mjs"
 # Node on Windows cannot resolve Git Bash's /d/a/... paths.
 if command -v cygpath >/dev/null 2>&1; then
-  verify_dir="$(cygpath -m "$verify_dir")"
+  verify_js="$(cygpath -m "$verify_js")"
 fi
 
 node_ok() {
@@ -30,5 +31,4 @@ if ! node_ok; then
   PATH="$node_dir/bin:$node_dir:$PATH"
 fi
 
-npm ci --prefix "$verify_dir" --ignore-scripts --no-audit --no-fund --loglevel=error
-node "$verify_dir/verify.mjs" "$@"
+node "$verify_js" "$@"
