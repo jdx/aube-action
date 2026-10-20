@@ -59,6 +59,72 @@ jobs:
           aube --version
           aube --version | grep -q '1\.5\.1'
 
+  reuse:
+    name: second use skips download / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - id: first
+        uses: $/
+        with:
+          version: "1.5.1"
+      - shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
+        run: touch "$BIN_PATH/reuse-marker"
+      - id: second
+        uses: $/
+        with:
+          version: "1.5.1"
+      - shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
+        run: |
+          aube --version | grep -q '1\.5\.1'
+          test -f "$BIN_PATH/reuse-marker"
+          test "${{ steps.second.outputs.bin-path }}" = "$BIN_PATH"
+
+  aube-cache:
+    name: aube binary cache restore / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      # This job pins a version no other job uses, so a parallel job cannot
+      # hold its cache key and make the restore miss.
+      - id: first
+        uses: $/
+        with:
+          version: "1.5.0"
+      - name: Delete the installed binary
+        shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
+        run: rm -rf "$BIN_PATH"
+      - id: second
+        uses: $/
+        with:
+          version: "1.5.0"
+      - shell: bash
+        env:
+          CACHE_HIT: ${{ steps.second.outputs.aube-cache-hit }}
+        run: |
+          test "$CACHE_HIT" = true
+          aube --version | grep -q '1\.5\.0'
+
   node-explicit:
     name: node explicit / ${{ matrix.os }}
     strategy:
@@ -377,6 +443,8 @@ jobs:
       - hk
       - default
       - pinned
+      - reuse
+      - aube-cache
       - node-explicit
       - node-auto-mise-toml
       - node-auto-nvmrc

@@ -12,6 +12,10 @@ manager and the runtime.
 - run: aube ci
 ```
 
+The aube binary is cached with [`actions/cache`](https://github.com/actions/cache)
+per runner OS, architecture, and resolved aube version, so later runs skip the
+download. Using the action more than once in a job reuses the installed binary.
+
 Pin a specific aube version and run `aube ci` in one go:
 
 ```yaml
@@ -102,6 +106,7 @@ either an exact match or not used. For a workspace, list each member's
 | `bin-path`       | Directory containing `aube`, `aubr`, `aubx`. |
 | `node-version`   | Resolved Node.js version, or empty if node was not installed. |
 | `node-bin-path`  | Directory containing the `node` binary, or empty. |
+| `aube-cache-hit` | `true` when the aube binary was restored from the cache. |
 | `cache-hit`      | `true` when `node_modules` was restored from an exact cache match. |
 
 ## Platform support
