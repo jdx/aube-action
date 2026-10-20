@@ -115,6 +115,7 @@ either an exact match or not used. For a workspace, list each member's
 | `bin-path`       | Directory containing `aube`, `aubr`, `aubx`. |
 | `node-version`   | Resolved Node.js version, or empty if node was not installed. |
 | `node-bin-path`  | Directory containing the `node` binary, or empty. |
+| `aube-cache-hit` | `true` when the aube binary was restored from the cache. |
 | `cache-hit`      | `true` when `node_modules` was restored from an exact cache match. |
 
 ## Platform support

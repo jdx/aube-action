@@ -75,6 +75,9 @@ outputs:
   node-bin-path:
     description: "Directory containing the node binary, or empty if node was not installed."
     value: ${{ steps.node.outputs.bin-path }}
+  aube-cache-hit:
+    description: '"true" when the aube binary was restored from the cache, otherwise "false".'
+    value: ${{ steps.cache-aube.outputs.cache-hit == 'true' && 'true' || 'false' }}
   cache-hit:
     description: '"true" when node_modules was restored from an exact cache match, otherwise "false" or empty.'
     value: ${{ steps.cache-restore.outputs.cache-hit }}
