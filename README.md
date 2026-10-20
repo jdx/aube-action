@@ -16,6 +16,16 @@ The aube binary is cached with [`actions/cache`](https://github.com/actions/cach
 per runner OS, architecture, and resolved aube version, so later runs skip the
 download. Using the action more than once in a job reuses the installed binary.
 
+Downloads are verified against the release's signed
+[packslip](https://packslip.dev) (`packslip.sigstore.json`) before they are
+unpacked: the signature must come from aube's release workflow in
+`aubepkg/aube`, and the archive must match its signed digest. Verification runs
+with a vendored build of the [`packslip` npm package](https://packslip.dev/docs/verify-js/)
+(`dist/verify.mjs`, so no npm packages are installed at run time) on the
+runner's Node.js, or on a temporary Node.js 24 installed with mise when the
+runner has none that is recent enough. Releases that predate packslip have no
+bundle; the action warns and installs them unverified.
+
 Pin a specific aube version and run `aube ci` in one go:
 
 ```yaml
