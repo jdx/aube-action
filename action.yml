@@ -149,6 +149,8 @@ runs:
         INSTALL_DIR: ${{ steps.resolve.outputs.install-dir }}
         GH_TOKEN: ${{ inputs.token }}
         RUNNER_OS: ${{ runner.os }}
+        RUNNER_ARCH: ${{ runner.arch }}
+        ACTION_PATH: ${{ github.action_path }}
       # Writing to GITHUB_PATH is the entire purpose of this action -- it
       # installs aube and makes it available to subsequent steps.
       # jactionlint ignore=github-env
@@ -169,21 +171,37 @@ runs:
         if [ -x "$INSTALL_DIR/aube$bin_ext" ]; then
           echo "aube $VERSION already installed at $INSTALL_DIR"
         else
-          rm -rf "$INSTALL_DIR"
-          mkdir -p "$INSTALL_DIR"
+          archive="aube-$TAG-$TARGET.$ext"
+          dl_dir="${RUNNER_TEMP:-/tmp}/aube-action-dl/$VERSION/$TARGET"
+          rm -rf "$INSTALL_DIR" "$dl_dir"
+          mkdir -p "$INSTALL_DIR" "$dl_dir"
           echo "Downloading $url"
           auth=()
           if [ -n "${GH_TOKEN:-}" ]; then
             auth=(-H "Authorization: Bearer $GH_TOKEN")
           fi
+          curl -fsSL "${auth[@]}" -o "$dl_dir/$archive" "$url"
+
+          # Releases from the packslip era carry a signed inventory of every
+          # archive. Only a 404 means there is none; any other failure, and
+          # any verification failure, stops the install.
+          status="$(curl -sSL "${auth[@]}" -o "$dl_dir/packslip.sigstore.json" -w '%{http_code}' \
+            "https://github.com/endevco/aube/releases/download/$TAG/packslip.sigstore.json")"
+          case "$status" in
+            200) "$ACTION_PATH/scripts/verify-release.sh" "$dl_dir/packslip.sigstore.json" "$dl_dir/$archive" "$archive" "$TAG" ;;
+            404) echo "::warning::aube $TAG has no signed packslip; installing without verifying the download" ;;
+            *)
+              echo "::error::Fetching the packslip for aube $TAG failed with HTTP $status"
+              exit 1
+              ;;
+          esac
+
           if [ "$ext" = zip ]; then
-            tmp="$(mktemp -d)"
-            curl -fsSL "${auth[@]}" -o "$tmp/aube.zip" "$url"
-            unzip -oq "$tmp/aube.zip" -d "$INSTALL_DIR"
-            rm -rf "$tmp"
+            unzip -oq "$dl_dir/$archive" -d "$INSTALL_DIR"
           else
-            curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$INSTALL_DIR"
+            tar -xzf "$dl_dir/$archive" -C "$INSTALL_DIR"
           fi
+          rm -rf "$dl_dir"
           for bin in aube aubr aubx; do
             chmod +x "$INSTALL_DIR/$bin$bin_ext" 2>/dev/null || true
           done
@@ -214,39 +232,14 @@ runs:
         RUNNER_ARCH: ${{ runner.arch }}
         WORKING_DIR: ${{ inputs.working-directory }}
         WORKSPACE: ${{ github.workspace }}
+        ACTION_PATH: ${{ github.action_path }}
       # Writing to GITHUB_PATH is the entire purpose of this step -- it
       # installs node via mise and makes it available to subsequent steps.
-      # mise.run is mise's documented installer and the runner has no mise yet,
-      # so there is no mise.lock to verify the download against.
-      # jactionlint ignore=github-env,unverified-download
+      # jactionlint ignore=github-env
       run: |
         set -euo pipefail
 
-        # Install mise. mise.run is a POSIX shell script; on Windows we fetch
-        # the standalone .exe from jdx/mise releases instead.
-        if [ "$RUNNER_OS" = "Windows" ]; then
-          mise_dir="${RUNNER_TEMP:-/tmp}/aube-action-mise"
-          mise="$mise_dir/mise.exe"
-          if [ ! -x "$mise" ]; then
-            arch_suffix=x64
-            if [ "$RUNNER_ARCH" = "ARM64" ]; then arch_suffix=arm64; fi
-            mise_loc="$(curl -fsSIL -o /dev/null -w '%{url_effective}' \
-              'https://github.com/jdx/mise/releases/latest')"
-            mise_ver="${mise_loc##*/tag/}"
-            mkdir -p "$mise_dir"
-            curl -fsSL -o "$mise" \
-              "https://github.com/jdx/mise/releases/download/$mise_ver/mise-$mise_ver-windows-$arch_suffix.exe"
-          fi
-        else
-          if [ ! -x "$HOME/.local/bin/mise" ] && ! command -v mise >/dev/null 2>&1; then
-            curl -fsSL https://mise.run | sh
-          fi
-          if [ -x "$HOME/.local/bin/mise" ]; then
-            mise="$HOME/.local/bin/mise"
-          else
-            mise="$(command -v mise)"
-          fi
-        fi
+        mise="$("$ACTION_PATH/scripts/ensure-mise.sh")"
 
         discovery_dir="${WORKING_DIR:-$WORKSPACE}"
         if [ -z "$discovery_dir" ]; then discovery_dir="$WORKSPACE"; fi
