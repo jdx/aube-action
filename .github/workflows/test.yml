@@ -103,10 +103,12 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      # This job pins a version no other job uses, so a parallel job cannot
+      # hold its cache key and make the restore miss.
       - id: first
         uses: $/
         with:
-          version: "1.5.1"
+          version: "1.5.0"
       - name: Delete the installed binary
         shell: bash
         env:
@@ -115,13 +117,13 @@ jobs:
       - id: second
         uses: $/
         with:
-          version: "1.5.1"
+          version: "1.5.0"
       - shell: bash
         env:
           CACHE_HIT: ${{ steps.second.outputs.aube-cache-hit }}
         run: |
           test "$CACHE_HIT" = true
-          aube --version | grep -q '1\.5\.1'
+          aube --version | grep -q '1\.5\.0'
 
   node-explicit:
     name: node explicit / ${{ matrix.os }}
