@@ -71,17 +71,25 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - uses: $/
+      - id: first
+        uses: $/
         with:
           version: "1.5.1"
+      - shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
+        run: touch "$BIN_PATH/reuse-marker"
       - id: second
         uses: $/
         with:
           version: "1.5.1"
       - shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
         run: |
           aube --version | grep -q '1\.5\.1'
-          test -n "${{ steps.second.outputs.bin-path }}"
+          test -f "$BIN_PATH/reuse-marker"
+          test "${{ steps.second.outputs.bin-path }}" = "$BIN_PATH"
 
   node-explicit:
     name: node explicit / ${{ matrix.os }}
