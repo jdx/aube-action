@@ -140,24 +140,28 @@ runs:
         url="https://github.com/endevco/aube/releases/download/$tag/$archive"
 
         install_dir="${RUNNER_TEMP:-/tmp}/aube-action/$version/$target"
-        rm -rf "$install_dir"
-        mkdir -p "$install_dir"
-        echo "Downloading $url"
-        auth=()
-        if [ -n "${GH_TOKEN:-}" ]; then
-          auth=(-H "Authorization: Bearer $GH_TOKEN")
-        fi
-        if [ "$ext" = zip ]; then
-          tmp="$(mktemp -d)"
-          curl -fsSL "${auth[@]}" -o "$tmp/aube.zip" "$url"
-          unzip -oq "$tmp/aube.zip" -d "$install_dir"
-          rm -rf "$tmp"
+        if [ -x "$install_dir/aube$bin_ext" ]; then
+          echo "aube $version already installed at $install_dir"
         else
-          curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$install_dir"
+          rm -rf "$install_dir"
+          mkdir -p "$install_dir"
+          echo "Downloading $url"
+          auth=()
+          if [ -n "${GH_TOKEN:-}" ]; then
+            auth=(-H "Authorization: Bearer $GH_TOKEN")
+          fi
+          if [ "$ext" = zip ]; then
+            tmp="$(mktemp -d)"
+            curl -fsSL "${auth[@]}" -o "$tmp/aube.zip" "$url"
+            unzip -oq "$tmp/aube.zip" -d "$install_dir"
+            rm -rf "$tmp"
+          else
+            curl -fsSL "${auth[@]}" "$url" | tar -xz -C "$install_dir"
+          fi
+          for bin in aube aubr aubx; do
+            chmod +x "$install_dir/$bin$bin_ext" 2>/dev/null || true
+          done
         fi
-        for bin in aube aubr aubx; do
-          chmod +x "$install_dir/$bin$bin_ext" 2>/dev/null || true
-        done
 
         echo "$install_dir" >> "$GITHUB_PATH"
         echo "version=$version" >> "$GITHUB_OUTPUT"

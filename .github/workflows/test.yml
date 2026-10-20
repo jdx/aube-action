@@ -59,6 +59,30 @@ jobs:
           aube --version
           aube --version | grep -q '1\.5\.1'
 
+  reuse:
+    name: second use skips download / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: $/
+        with:
+          version: "1.5.1"
+      - id: second
+        uses: $/
+        with:
+          version: "1.5.1"
+      - shell: bash
+        run: |
+          aube --version | grep -q '1\.5\.1'
+          test -n "${{ steps.second.outputs.bin-path }}"
+
   node-explicit:
     name: node explicit / ${{ matrix.os }}
     strategy:
