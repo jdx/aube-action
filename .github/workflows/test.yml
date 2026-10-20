@@ -91,6 +91,38 @@ jobs:
           test -f "$BIN_PATH/reuse-marker"
           test "${{ steps.second.outputs.bin-path }}" = "$BIN_PATH"
 
+  aube-cache:
+    name: aube binary cache restore / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - id: first
+        uses: $/
+        with:
+          version: "1.5.1"
+      - name: Delete the installed binary
+        shell: bash
+        env:
+          BIN_PATH: ${{ steps.first.outputs.bin-path }}
+        run: rm -rf "$BIN_PATH"
+      - id: second
+        uses: $/
+        with:
+          version: "1.5.1"
+      - shell: bash
+        env:
+          CACHE_HIT: ${{ steps.second.outputs.aube-cache-hit }}
+        run: |
+          test "$CACHE_HIT" = true
+          aube --version | grep -q '1\.5\.1'
+
   node-explicit:
     name: node explicit / ${{ matrix.os }}
     strategy:
@@ -409,6 +441,8 @@ jobs:
       - hk
       - default
       - pinned
+      - reuse
+      - aube-cache
       - node-explicit
       - node-auto-mise-toml
       - node-auto-nvmrc
