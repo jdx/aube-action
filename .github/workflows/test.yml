@@ -52,6 +52,63 @@ jobs:
       - name: Fail if the committed bundle differs
         run: git diff --exit-code -- dist
 
+  verify-rejects:
+    name: verification rejects bad downloads
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Verify a real release, then corrupt each input
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag=v2.8.0
+          archive="aube-$tag-x86_64-unknown-linux-gnu.tar.gz"
+          dir="$RUNNER_TEMP/verify-rejects"
+          mkdir -p "$dir"
+          gh release download "$tag" --repo aubepkg/aube -D "$dir" \
+            -p packslip.sigstore.json -p "$archive"
+          verify() { ./scripts/verify-release.sh "$@"; }
+
+          verify "$dir/packslip.sigstore.json" "$dir/$archive" "$archive" "$tag"
+
+          expect_rejected() {
+            local what="$1"
+            shift
+            if "$@" >/dev/null 2>&1; then
+              echo "::error::verification accepted $what"
+              exit 1
+            fi
+            echo "rejected $what"
+          }
+
+          expect_rejected "the wrong tag" \
+            verify "$dir/packslip.sigstore.json" "$dir/$archive" "$archive" v2.7.0
+
+          expect_rejected "an archive the bundle does not list" \
+            verify "$dir/packslip.sigstore.json" "$dir/$archive" "not-$archive" "$tag"
+
+          cp "$dir/$archive" "$dir/changed.tar.gz"
+          echo x >> "$dir/changed.tar.gz"
+          expect_rejected "a modified archive" \
+            verify "$dir/packslip.sigstore.json" "$dir/changed.tar.gz" "$archive" "$tag"
+
+          python3 - "$dir/packslip.sigstore.json" "$dir/bad-signature.json" <<'PY'
+          import json
+          import sys
+
+          bundle = json.load(open(sys.argv[1]))
+          sig = bundle["dsseEnvelope"]["signatures"][0]
+          sig["sig"] = ("A" if sig["sig"][0] != "A" else "B") + sig["sig"][1:]
+          json.dump(bundle, open(sys.argv[2], "w"))
+          PY
+          expect_rejected "a bundle with a bad signature" \
+            verify "$dir/bad-signature.json" "$dir/$archive" "$archive" "$tag"
+
   pinned:
     name: pinned aube / ${{ matrix.os }}
     strategy:
@@ -454,6 +511,7 @@ jobs:
       - hk
       - default
       - dist
+      - verify-rejects
       - pinned
       - reuse
       - aube-cache

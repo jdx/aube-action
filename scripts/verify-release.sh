@@ -28,6 +28,10 @@ if ! node_ok; then
   rm -rf "$node_dir"
   "$mise" install-into node@24 "$node_dir" >&2
   # `install-into` puts node at <dir>/bin, or at <dir>/node.exe on Windows.
+  # A native Windows path such as D:\a\_temp would split on the drive colon.
+  if command -v cygpath >/dev/null 2>&1; then
+    node_dir="$(cygpath -u "$node_dir")"
+  fi
   PATH="$node_dir/bin:$node_dir:$PATH"
 fi
 
