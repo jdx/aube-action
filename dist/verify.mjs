@@ -11,11 +11,20 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
   if (typeof require !== "undefined") return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
-var __esm = (fn, res) => function __init() {
-  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+var __esm = (fn, res, err) => function __init() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e) {
+    throw err = [e], e;
+  }
 };
 var __commonJS = (cb, mod) => function __require2() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  try {
+    return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
+  } catch (e) {
+    throw mod = 0, e;
+  }
 };
 var __export = (target, all) => {
   for (var name in all)
@@ -3911,37 +3920,37 @@ var require_commonjs = __commonJS({
     exports.isReadable = isReadable;
     var isWritable = (s) => !!s && typeof s === "object" && s instanceof node_events_1.EventEmitter && typeof s.write === "function" && typeof s.end === "function";
     exports.isWritable = isWritable;
-    var EOF = Symbol("EOF");
-    var MAYBE_EMIT_END = Symbol("maybeEmitEnd");
-    var EMITTED_END = Symbol("emittedEnd");
-    var EMITTING_END = Symbol("emittingEnd");
-    var EMITTED_ERROR = Symbol("emittedError");
-    var CLOSED = Symbol("closed");
-    var READ = Symbol("read");
-    var FLUSH = Symbol("flush");
-    var FLUSHCHUNK = Symbol("flushChunk");
-    var ENCODING = Symbol("encoding");
-    var DECODER = Symbol("decoder");
-    var FLOWING = Symbol("flowing");
-    var PAUSED = Symbol("paused");
-    var RESUME = Symbol("resume");
-    var BUFFER = Symbol("buffer");
-    var PIPES = Symbol("pipes");
-    var BUFFERLENGTH = Symbol("bufferLength");
-    var BUFFERPUSH = Symbol("bufferPush");
-    var BUFFERSHIFT = Symbol("bufferShift");
-    var OBJECTMODE = Symbol("objectMode");
-    var DESTROYED = Symbol("destroyed");
-    var ERROR = Symbol("error");
-    var EMITDATA = Symbol("emitData");
-    var EMITEND = Symbol("emitEnd");
-    var EMITEND2 = Symbol("emitEnd2");
-    var ASYNC = Symbol("async");
-    var ABORT = Symbol("abort");
-    var ABORTED = Symbol("aborted");
-    var SIGNAL = Symbol("signal");
-    var DATALISTENERS = Symbol("dataListeners");
-    var DISCARDED = Symbol("discarded");
+    var EOF = /* @__PURE__ */ Symbol("EOF");
+    var MAYBE_EMIT_END = /* @__PURE__ */ Symbol("maybeEmitEnd");
+    var EMITTED_END = /* @__PURE__ */ Symbol("emittedEnd");
+    var EMITTING_END = /* @__PURE__ */ Symbol("emittingEnd");
+    var EMITTED_ERROR = /* @__PURE__ */ Symbol("emittedError");
+    var CLOSED = /* @__PURE__ */ Symbol("closed");
+    var READ = /* @__PURE__ */ Symbol("read");
+    var FLUSH = /* @__PURE__ */ Symbol("flush");
+    var FLUSHCHUNK = /* @__PURE__ */ Symbol("flushChunk");
+    var ENCODING = /* @__PURE__ */ Symbol("encoding");
+    var DECODER = /* @__PURE__ */ Symbol("decoder");
+    var FLOWING = /* @__PURE__ */ Symbol("flowing");
+    var PAUSED = /* @__PURE__ */ Symbol("paused");
+    var RESUME = /* @__PURE__ */ Symbol("resume");
+    var BUFFER = /* @__PURE__ */ Symbol("buffer");
+    var PIPES = /* @__PURE__ */ Symbol("pipes");
+    var BUFFERLENGTH = /* @__PURE__ */ Symbol("bufferLength");
+    var BUFFERPUSH = /* @__PURE__ */ Symbol("bufferPush");
+    var BUFFERSHIFT = /* @__PURE__ */ Symbol("bufferShift");
+    var OBJECTMODE = /* @__PURE__ */ Symbol("objectMode");
+    var DESTROYED = /* @__PURE__ */ Symbol("destroyed");
+    var ERROR = /* @__PURE__ */ Symbol("error");
+    var EMITDATA = /* @__PURE__ */ Symbol("emitData");
+    var EMITEND = /* @__PURE__ */ Symbol("emitEnd");
+    var EMITEND2 = /* @__PURE__ */ Symbol("emitEnd2");
+    var ASYNC = /* @__PURE__ */ Symbol("async");
+    var ABORT = /* @__PURE__ */ Symbol("abort");
+    var ABORTED = /* @__PURE__ */ Symbol("aborted");
+    var SIGNAL = /* @__PURE__ */ Symbol("signal");
+    var DATALISTENERS = /* @__PURE__ */ Symbol("dataListeners");
+    var DISCARDED = /* @__PURE__ */ Symbol("discarded");
     var defer = (fn) => Promise.resolve().then(fn);
     var nodefer = (fn) => fn();
     var isEndish = (ev) => ev === "end" || ev === "finish" || ev === "prefinish";
@@ -4968,7 +4977,7 @@ var require_commonjs2 = __commonJS({
       buffer_1.Buffer.concat = makeNoOp ? noop : OriginalBufferConcat;
     } : (_) => {
     };
-    var _superWrite = Symbol("_superWrite");
+    var _superWrite = /* @__PURE__ */ Symbol("_superWrite");
     var ZlibError = class extends Error {
       code;
       errno;
@@ -4986,7 +4995,7 @@ var require_commonjs2 = __commonJS({
       }
     };
     exports.ZlibError = ZlibError;
-    var _flushFlag = Symbol("flushFlag");
+    var _flushFlag = /* @__PURE__ */ Symbol("flushFlag");
     var ZlibBase = class extends minipass_1.Minipass {
       #sawError = false;
       #ended = false;
@@ -5341,8 +5350,8 @@ var require_blob = __commonJS({
   "node_modules/minipass-fetch/lib/blob.js"(exports, module) {
     "use strict";
     var { Minipass } = require_commonjs();
-    var TYPE = Symbol("type");
-    var BUFFER = Symbol("buffer");
+    var TYPE = /* @__PURE__ */ Symbol("type");
+    var BUFFER = /* @__PURE__ */ Symbol("buffer");
     var Blob = class _Blob {
       constructor(blobParts, options) {
         this[TYPE] = "";
@@ -9244,8 +9253,8 @@ var require_body = __commonJS({
       decode = require_lib2().decode;
     } catch (e) {
     }
-    var INTERNALS = Symbol("Body internals");
-    var CONSUME_BODY = Symbol("consumeBody");
+    var INTERNALS = /* @__PURE__ */ Symbol("Body internals");
+    var CONSUME_BODY = /* @__PURE__ */ Symbol("consumeBody");
     var Body = class {
       constructor(bodyArg, options = {}) {
         const { size = 0, timeout = 0 } = options;
@@ -9483,7 +9492,7 @@ var require_headers = __commonJS({
       }
       return void 0;
     };
-    var MAP = Symbol("map");
+    var MAP = /* @__PURE__ */ Symbol("map");
     var Headers = class _Headers {
       constructor(init = void 0) {
         this[MAP] = /* @__PURE__ */ Object.create(null);
@@ -9643,7 +9652,7 @@ var require_headers = __commonJS({
     var getHeaders = (headers, kind = "key+value") => Object.keys(headers[MAP]).sort().map(
       kind === "key" ? (k) => k.toLowerCase() : kind === "value" ? (k) => headers[MAP][k].join(", ") : (k) => [k.toLowerCase(), headers[MAP][k].join(", ")]
     );
-    var INTERNAL2 = Symbol("internal");
+    var INTERNAL2 = /* @__PURE__ */ Symbol("internal");
     var HeadersIterator = class _HeadersIterator {
       constructor(target, kind) {
         this[INTERNAL2] = {
@@ -9689,7 +9698,7 @@ var require_response = __commonJS({
     var Headers = require_headers();
     var Body = require_body();
     var { clone, extractContentType } = Body;
-    var INTERNALS = Symbol("Response internals");
+    var INTERNALS = /* @__PURE__ */ Symbol("Response internals");
     var Response = class _Response extends Body {
       constructor(body = null, opts = {}) {
         super(body, opts);
@@ -9847,7 +9856,7 @@ var require_request = __commonJS({
     var { clone, extractContentType, getTotalBytes } = Body;
     var version = require_package2().version;
     var defaultUserAgent = `minipass-fetch/${version} (+https://github.com/isaacs/minipass-fetch)`;
-    var INTERNALS = Symbol("Request internals");
+    var INTERNALS = /* @__PURE__ */ Symbol("Request internals");
     var isRequest = (input) => typeof input === "object" && typeof input[INTERNALS] === "object";
     var isAbortSignal = (signal) => {
       const proto = signal && typeof signal === "object" && Object.getPrototypeOf(signal);
@@ -12242,33 +12251,33 @@ var require_minipass = __commonJS({
     var EE = __require("events");
     var Stream = __require("stream");
     var SD = __require("string_decoder").StringDecoder;
-    var EOF = Symbol("EOF");
-    var MAYBE_EMIT_END = Symbol("maybeEmitEnd");
-    var EMITTED_END = Symbol("emittedEnd");
-    var EMITTING_END = Symbol("emittingEnd");
-    var EMITTED_ERROR = Symbol("emittedError");
-    var CLOSED = Symbol("closed");
-    var READ = Symbol("read");
-    var FLUSH = Symbol("flush");
-    var FLUSHCHUNK = Symbol("flushChunk");
-    var ENCODING = Symbol("encoding");
-    var DECODER = Symbol("decoder");
-    var FLOWING = Symbol("flowing");
-    var PAUSED = Symbol("paused");
-    var RESUME = Symbol("resume");
-    var BUFFERLENGTH = Symbol("bufferLength");
-    var BUFFERPUSH = Symbol("bufferPush");
-    var BUFFERSHIFT = Symbol("bufferShift");
-    var OBJECTMODE = Symbol("objectMode");
-    var DESTROYED = Symbol("destroyed");
-    var EMITDATA = Symbol("emitData");
-    var EMITEND = Symbol("emitEnd");
-    var EMITEND2 = Symbol("emitEnd2");
-    var ASYNC = Symbol("async");
+    var EOF = /* @__PURE__ */ Symbol("EOF");
+    var MAYBE_EMIT_END = /* @__PURE__ */ Symbol("maybeEmitEnd");
+    var EMITTED_END = /* @__PURE__ */ Symbol("emittedEnd");
+    var EMITTING_END = /* @__PURE__ */ Symbol("emittingEnd");
+    var EMITTED_ERROR = /* @__PURE__ */ Symbol("emittedError");
+    var CLOSED = /* @__PURE__ */ Symbol("closed");
+    var READ = /* @__PURE__ */ Symbol("read");
+    var FLUSH = /* @__PURE__ */ Symbol("flush");
+    var FLUSHCHUNK = /* @__PURE__ */ Symbol("flushChunk");
+    var ENCODING = /* @__PURE__ */ Symbol("encoding");
+    var DECODER = /* @__PURE__ */ Symbol("decoder");
+    var FLOWING = /* @__PURE__ */ Symbol("flowing");
+    var PAUSED = /* @__PURE__ */ Symbol("paused");
+    var RESUME = /* @__PURE__ */ Symbol("resume");
+    var BUFFERLENGTH = /* @__PURE__ */ Symbol("bufferLength");
+    var BUFFERPUSH = /* @__PURE__ */ Symbol("bufferPush");
+    var BUFFERSHIFT = /* @__PURE__ */ Symbol("bufferShift");
+    var OBJECTMODE = /* @__PURE__ */ Symbol("objectMode");
+    var DESTROYED = /* @__PURE__ */ Symbol("destroyed");
+    var EMITDATA = /* @__PURE__ */ Symbol("emitData");
+    var EMITEND = /* @__PURE__ */ Symbol("emitEnd");
+    var EMITEND2 = /* @__PURE__ */ Symbol("emitEnd2");
+    var ASYNC = /* @__PURE__ */ Symbol("async");
     var defer = (fn) => Promise.resolve().then(fn);
     var doIter = global._MP_NO_ITERATOR_SYMBOLS_ !== "1";
-    var ASYNCITERATOR = doIter && Symbol.asyncIterator || Symbol("asyncIterator not implemented");
-    var ITERATOR = doIter && Symbol.iterator || Symbol("iterator not implemented");
+    var ASYNCITERATOR = doIter && Symbol.asyncIterator || /* @__PURE__ */ Symbol("asyncIterator not implemented");
+    var ITERATOR = doIter && Symbol.iterator || /* @__PURE__ */ Symbol("iterator not implemented");
     var isEndish = (ev) => ev === "end" || ev === "finish" || ev === "prefinish";
     var isArrayBuffer = (b) => b instanceof ArrayBuffer || typeof b === "object" && b.constructor && b.constructor.name === "ArrayBuffer" && b.byteLength >= 0;
     var isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
@@ -12759,9 +12768,9 @@ var require_minipass = __commonJS({
 var require_minipass_flush = __commonJS({
   "node_modules/minipass-flush/index.js"(exports, module) {
     var Minipass = require_minipass();
-    var _flush = Symbol("_flush");
-    var _flushed = Symbol("_flushed");
-    var _flushing = Symbol("_flushing");
+    var _flush = /* @__PURE__ */ Symbol("_flush");
+    var _flushed = /* @__PURE__ */ Symbol("_flushed");
+    var _flushing = /* @__PURE__ */ Symbol("_flushing");
     var Flush = class extends Minipass {
       constructor(opt = {}) {
         if (typeof opt === "function")
@@ -12794,8 +12803,8 @@ var require_minipass_flush = __commonJS({
 var require_minipass_collect = __commonJS({
   "node_modules/minipass-collect/index.js"(exports, module) {
     var { Minipass } = require_commonjs();
-    var _data = Symbol("_data");
-    var _length = Symbol("_length");
+    var _data = /* @__PURE__ */ Symbol("_data");
+    var _length = /* @__PURE__ */ Symbol("_length");
     var Collect = class extends Minipass {
       constructor(options) {
         super(options);
@@ -12870,33 +12879,33 @@ var require_minipass2 = __commonJS({
     var EE = __require("events");
     var Stream = __require("stream");
     var SD = __require("string_decoder").StringDecoder;
-    var EOF = Symbol("EOF");
-    var MAYBE_EMIT_END = Symbol("maybeEmitEnd");
-    var EMITTED_END = Symbol("emittedEnd");
-    var EMITTING_END = Symbol("emittingEnd");
-    var EMITTED_ERROR = Symbol("emittedError");
-    var CLOSED = Symbol("closed");
-    var READ = Symbol("read");
-    var FLUSH = Symbol("flush");
-    var FLUSHCHUNK = Symbol("flushChunk");
-    var ENCODING = Symbol("encoding");
-    var DECODER = Symbol("decoder");
-    var FLOWING = Symbol("flowing");
-    var PAUSED = Symbol("paused");
-    var RESUME = Symbol("resume");
-    var BUFFERLENGTH = Symbol("bufferLength");
-    var BUFFERPUSH = Symbol("bufferPush");
-    var BUFFERSHIFT = Symbol("bufferShift");
-    var OBJECTMODE = Symbol("objectMode");
-    var DESTROYED = Symbol("destroyed");
-    var EMITDATA = Symbol("emitData");
-    var EMITEND = Symbol("emitEnd");
-    var EMITEND2 = Symbol("emitEnd2");
-    var ASYNC = Symbol("async");
+    var EOF = /* @__PURE__ */ Symbol("EOF");
+    var MAYBE_EMIT_END = /* @__PURE__ */ Symbol("maybeEmitEnd");
+    var EMITTED_END = /* @__PURE__ */ Symbol("emittedEnd");
+    var EMITTING_END = /* @__PURE__ */ Symbol("emittingEnd");
+    var EMITTED_ERROR = /* @__PURE__ */ Symbol("emittedError");
+    var CLOSED = /* @__PURE__ */ Symbol("closed");
+    var READ = /* @__PURE__ */ Symbol("read");
+    var FLUSH = /* @__PURE__ */ Symbol("flush");
+    var FLUSHCHUNK = /* @__PURE__ */ Symbol("flushChunk");
+    var ENCODING = /* @__PURE__ */ Symbol("encoding");
+    var DECODER = /* @__PURE__ */ Symbol("decoder");
+    var FLOWING = /* @__PURE__ */ Symbol("flowing");
+    var PAUSED = /* @__PURE__ */ Symbol("paused");
+    var RESUME = /* @__PURE__ */ Symbol("resume");
+    var BUFFERLENGTH = /* @__PURE__ */ Symbol("bufferLength");
+    var BUFFERPUSH = /* @__PURE__ */ Symbol("bufferPush");
+    var BUFFERSHIFT = /* @__PURE__ */ Symbol("bufferShift");
+    var OBJECTMODE = /* @__PURE__ */ Symbol("objectMode");
+    var DESTROYED = /* @__PURE__ */ Symbol("destroyed");
+    var EMITDATA = /* @__PURE__ */ Symbol("emitData");
+    var EMITEND = /* @__PURE__ */ Symbol("emitEnd");
+    var EMITEND2 = /* @__PURE__ */ Symbol("emitEnd2");
+    var ASYNC = /* @__PURE__ */ Symbol("async");
     var defer = (fn) => Promise.resolve().then(fn);
     var doIter = global._MP_NO_ITERATOR_SYMBOLS_ !== "1";
-    var ASYNCITERATOR = doIter && Symbol.asyncIterator || Symbol("asyncIterator not implemented");
-    var ITERATOR = doIter && Symbol.iterator || Symbol("iterator not implemented");
+    var ASYNCITERATOR = doIter && Symbol.asyncIterator || /* @__PURE__ */ Symbol("asyncIterator not implemented");
+    var ITERATOR = doIter && Symbol.iterator || /* @__PURE__ */ Symbol("iterator not implemented");
     var isEndish = (ev) => ev === "end" || ev === "finish" || ev === "prefinish";
     var isArrayBuffer = (b) => b instanceof ArrayBuffer || typeof b === "object" && b.constructor && b.constructor.name === "ArrayBuffer" && b.byteLength >= 0;
     var isArrayBufferView = (b) => !Buffer.isBuffer(b) && ArrayBuffer.isView(b);
@@ -13390,16 +13399,16 @@ var require_minipass_pipeline = __commonJS({
     var EE = __require("events");
     var isStream = (s) => s && s instanceof EE && (typeof s.pipe === "function" || // readable
     typeof s.write === "function" && typeof s.end === "function");
-    var _head = Symbol("_head");
-    var _tail = Symbol("_tail");
-    var _linkStreams = Symbol("_linkStreams");
-    var _setHead = Symbol("_setHead");
-    var _setTail = Symbol("_setTail");
-    var _onError = Symbol("_onError");
-    var _onData = Symbol("_onData");
-    var _onEnd = Symbol("_onEnd");
-    var _onDrain = Symbol("_onDrain");
-    var _streams = Symbol("_streams");
+    var _head = /* @__PURE__ */ Symbol("_head");
+    var _tail = /* @__PURE__ */ Symbol("_tail");
+    var _linkStreams = /* @__PURE__ */ Symbol("_linkStreams");
+    var _setHead = /* @__PURE__ */ Symbol("_setHead");
+    var _setTail = /* @__PURE__ */ Symbol("_setTail");
+    var _onError = /* @__PURE__ */ Symbol("_onError");
+    var _onData = /* @__PURE__ */ Symbol("_onData");
+    var _onEnd = /* @__PURE__ */ Symbol("_onEnd");
+    var _onDrain = /* @__PURE__ */ Symbol("_onDrain");
+    var _streams = /* @__PURE__ */ Symbol("_streams");
     var Pipeline = class extends Minipass {
       constructor(opts, ...streams) {
         if (isStream(opts)) {
@@ -14829,7 +14838,7 @@ var require_range = __commonJS({
 var require_comparator = __commonJS({
   "node_modules/semver/classes/comparator.js"(exports, module) {
     "use strict";
-    var ANY = Symbol("SemVer ANY");
+    var ANY = /* @__PURE__ */ Symbol("SemVer ANY");
     var Comparator = class _Comparator {
       static get ANY() {
         return ANY;
@@ -15606,7 +15615,7 @@ var require_errors2 = __commonJS({
       toString() {
         return `${this.name} [${this.code}]: ${this.message}`;
       }
-      [Symbol.for("nodejs.util.inspect.custom")](_recurseTimes, ctx) {
+      [/* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom")](_recurseTimes, ctx) {
         return inspect(this, {
           ...ctx,
           getters: true,
@@ -16785,8 +16794,8 @@ function createPuller(iterator) {
 var pMapSkip, pMapStop;
 var init_p_map = __esm({
   "node_modules/p-map/index.js"() {
-    pMapSkip = Symbol("skip");
-    pMapStop = Symbol("stop");
+    pMapSkip = /* @__PURE__ */ Symbol("skip");
+    pMapStop = /* @__PURE__ */ Symbol("stop");
   }
 });
 
@@ -17733,34 +17742,34 @@ var require_lib6 = __commonJS({
     var EE = __require("events").EventEmitter;
     var fs = __require("fs");
     var writev = fs.writev;
-    var _autoClose = Symbol("_autoClose");
-    var _close = Symbol("_close");
-    var _ended = Symbol("_ended");
-    var _fd = Symbol("_fd");
-    var _finished = Symbol("_finished");
-    var _flags = Symbol("_flags");
-    var _flush = Symbol("_flush");
-    var _handleChunk = Symbol("_handleChunk");
-    var _makeBuf = Symbol("_makeBuf");
-    var _mode = Symbol("_mode");
-    var _needDrain = Symbol("_needDrain");
-    var _onerror = Symbol("_onerror");
-    var _onopen = Symbol("_onopen");
-    var _onread = Symbol("_onread");
-    var _onwrite = Symbol("_onwrite");
-    var _open = Symbol("_open");
-    var _path = Symbol("_path");
-    var _pos = Symbol("_pos");
-    var _queue = Symbol("_queue");
-    var _read = Symbol("_read");
-    var _readSize = Symbol("_readSize");
-    var _reading = Symbol("_reading");
-    var _remain = Symbol("_remain");
-    var _size = Symbol("_size");
-    var _write = Symbol("_write");
-    var _writing = Symbol("_writing");
-    var _defaultFlag = Symbol("_defaultFlag");
-    var _errored = Symbol("_errored");
+    var _autoClose = /* @__PURE__ */ Symbol("_autoClose");
+    var _close = /* @__PURE__ */ Symbol("_close");
+    var _ended = /* @__PURE__ */ Symbol("_ended");
+    var _fd = /* @__PURE__ */ Symbol("_fd");
+    var _finished = /* @__PURE__ */ Symbol("_finished");
+    var _flags = /* @__PURE__ */ Symbol("_flags");
+    var _flush = /* @__PURE__ */ Symbol("_flush");
+    var _handleChunk = /* @__PURE__ */ Symbol("_handleChunk");
+    var _makeBuf = /* @__PURE__ */ Symbol("_makeBuf");
+    var _mode = /* @__PURE__ */ Symbol("_mode");
+    var _needDrain = /* @__PURE__ */ Symbol("_needDrain");
+    var _onerror = /* @__PURE__ */ Symbol("_onerror");
+    var _onopen = /* @__PURE__ */ Symbol("_onopen");
+    var _onread = /* @__PURE__ */ Symbol("_onread");
+    var _onwrite = /* @__PURE__ */ Symbol("_onwrite");
+    var _open = /* @__PURE__ */ Symbol("_open");
+    var _path = /* @__PURE__ */ Symbol("_path");
+    var _pos = /* @__PURE__ */ Symbol("_pos");
+    var _queue = /* @__PURE__ */ Symbol("_queue");
+    var _read = /* @__PURE__ */ Symbol("_read");
+    var _readSize = /* @__PURE__ */ Symbol("_readSize");
+    var _reading = /* @__PURE__ */ Symbol("_reading");
+    var _remain = /* @__PURE__ */ Symbol("_remain");
+    var _size = /* @__PURE__ */ Symbol("_size");
+    var _write = /* @__PURE__ */ Symbol("_write");
+    var _writing = /* @__PURE__ */ Symbol("_writing");
+    var _defaultFlag = /* @__PURE__ */ Symbol("_defaultFlag");
+    var _errored = /* @__PURE__ */ Symbol("_errored");
     var ReadStream = class extends Minipass {
       constructor(path, opt) {
         opt = opt || {};
@@ -19091,7 +19100,7 @@ var require_index_min2 = __commonJS({
       }, hs = typeof process == "object" && process ? typeof process.env == "object" && process.env && process.env.__MINIMATCH_TESTING_PLATFORM__ || process.platform : "posix", es = { win32: { sep: "\\" }, posix: { sep: "/" } };
       g.sep = hs === "win32" ? es.win32.sep : es.posix.sep;
       g.minimatch.sep = g.sep;
-      g.GLOBSTAR = Symbol("globstar **");
+      g.GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
       g.minimatch.GLOBSTAR = g.GLOBSTAR;
       var zi = "[^/]", Ui = zi + "*?", $i = "(?:(?!(?:\\/|^)(?:\\.{1,2})($|\\/)).)*?", qi = "(?:(?!(?:\\/|^)\\.).)*?", Hi = (n, t = {}) => (e) => (0, g.minimatch)(e, n, t);
       g.filter = Hi;
@@ -19971,7 +19980,7 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
       P.isReadable = ar;
       var lr = (n) => !!n && typeof n == "object" && n instanceof _e.EventEmitter && typeof n.write == "function" && typeof n.end == "function";
       P.isWritable = lr;
-      var $ = Symbol("EOF"), q = Symbol("maybeEmitEnd"), K = Symbol("emittedEnd"), Bt = Symbol("emittingEnd"), lt = Symbol("emittedError"), It = Symbol("closed"), ps = Symbol("read"), Gt = Symbol("flush"), ms = Symbol("flushChunk"), L = Symbol("encoding"), rt = Symbol("decoder"), x = Symbol("flowing"), ct = Symbol("paused"), nt = Symbol("resume"), T = Symbol("buffer"), M = Symbol("pipes"), C = Symbol("bufferLength"), we = Symbol("bufferPush"), zt = Symbol("bufferShift"), k = Symbol("objectMode"), O = Symbol("destroyed"), be = Symbol("error"), ye = Symbol("emitData"), gs = Symbol("emitEnd"), Se = Symbol("emitEnd2"), I = Symbol("async"), ve = Symbol("abort"), Ut = Symbol("aborted"), ut = Symbol("signal"), Z = Symbol("dataListeners"), D = Symbol("discarded"), ft = (n) => Promise.resolve().then(n), cr = (n) => n(), ur = (n) => n === "end" || n === "finish" || n === "prefinish", fr = (n) => n instanceof ArrayBuffer || !!n && typeof n == "object" && n.constructor && n.constructor.name === "ArrayBuffer" && n.byteLength >= 0, dr = (n) => !Buffer.isBuffer(n) && ArrayBuffer.isView(n), $t = class {
+      var $ = /* @__PURE__ */ Symbol("EOF"), q = /* @__PURE__ */ Symbol("maybeEmitEnd"), K = /* @__PURE__ */ Symbol("emittedEnd"), Bt = /* @__PURE__ */ Symbol("emittingEnd"), lt = /* @__PURE__ */ Symbol("emittedError"), It = /* @__PURE__ */ Symbol("closed"), ps = /* @__PURE__ */ Symbol("read"), Gt = /* @__PURE__ */ Symbol("flush"), ms = /* @__PURE__ */ Symbol("flushChunk"), L = /* @__PURE__ */ Symbol("encoding"), rt = /* @__PURE__ */ Symbol("decoder"), x = /* @__PURE__ */ Symbol("flowing"), ct = /* @__PURE__ */ Symbol("paused"), nt = /* @__PURE__ */ Symbol("resume"), T = /* @__PURE__ */ Symbol("buffer"), M = /* @__PURE__ */ Symbol("pipes"), C = /* @__PURE__ */ Symbol("bufferLength"), we = /* @__PURE__ */ Symbol("bufferPush"), zt = /* @__PURE__ */ Symbol("bufferShift"), k = /* @__PURE__ */ Symbol("objectMode"), O = /* @__PURE__ */ Symbol("destroyed"), be = /* @__PURE__ */ Symbol("error"), ye = /* @__PURE__ */ Symbol("emitData"), gs = /* @__PURE__ */ Symbol("emitEnd"), Se = /* @__PURE__ */ Symbol("emitEnd2"), I = /* @__PURE__ */ Symbol("async"), ve = /* @__PURE__ */ Symbol("abort"), Ut = /* @__PURE__ */ Symbol("aborted"), ut = /* @__PURE__ */ Symbol("signal"), Z = /* @__PURE__ */ Symbol("dataListeners"), D = /* @__PURE__ */ Symbol("discarded"), ft = (n) => Promise.resolve().then(n), cr = (n) => n(), ur = (n) => n === "end" || n === "finish" || n === "prefinish", fr = (n) => n instanceof ArrayBuffer || !!n && typeof n == "object" && n.constructor && n.constructor.name === "ArrayBuffer" && n.byteLength >= 0, dr = (n) => !Buffer.isBuffer(n) && ArrayBuffer.isView(n), $t = class {
         src;
         dest;
         opts;
@@ -20312,7 +20321,7 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
         }
       };
       _.ChildrenCache = Jt;
-      var ks = Symbol("PathScurry setAsCwd"), A = class {
+      var ks = /* @__PURE__ */ Symbol("PathScurry setAsCwd"), A = class {
         name;
         root;
         roots;
@@ -21054,7 +21063,7 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
       "use strict";
       Object.defineProperty(te, "__esModule", { value: true });
       te.Pattern = void 0;
-      var xr = H(), Tr = (n) => n.length >= 1, Cr = (n) => n.length >= 1, Rr = Symbol.for("nodejs.util.inspect.custom"), Ce = class n {
+      var xr = H(), Tr = (n) => n.length >= 1, Cr = (n) => n.length >= 1, Rr = /* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom"), Ce = class n {
         #t;
         #s;
         #n;
@@ -22048,7 +22057,7 @@ var require_key = __commonJS({
 // node_modules/proc-log/lib/index.js
 var require_lib8 = __commonJS({
   "node_modules/proc-log/lib/index.js"(exports, module) {
-    var META = Symbol("proc-log.meta");
+    var META = /* @__PURE__ */ Symbol("proc-log.meta");
     module.exports = {
       META,
       output: {
@@ -23305,7 +23314,7 @@ var INTERNAL, Agent2;
 var init_dist = __esm({
   "node_modules/agent-base/dist/index.js"() {
     init_helpers();
-    INTERNAL = Symbol("AgentBaseInternalState");
+    INTERNAL = /* @__PURE__ */ Symbol("AgentBaseInternalState");
     Agent2 = class extends http2.Agent {
       constructor(opts) {
         super(opts);
@@ -29228,9 +29237,9 @@ var require_entry = __commonJS({
       }
       return metadata;
     };
-    var _request = Symbol("request");
-    var _response = Symbol("response");
-    var _policy = Symbol("policy");
+    var _request = /* @__PURE__ */ Symbol("request");
+    var _response = /* @__PURE__ */ Symbol("response");
+    var _policy = /* @__PURE__ */ Symbol("policy");
     var CacheEntry = class _CacheEntry {
       constructor({ entry, request, response, options }) {
         if (entry) {
@@ -32221,7 +32230,7 @@ var require_ast = __commonJS({
       get depth() {
         return (this.#parent?.depth ?? -1) + 1;
       }
-      [Symbol.for("nodejs.util.inspect.custom")]() {
+      [/* @__PURE__ */ Symbol.for("nodejs.util.inspect.custom")]() {
         return {
           "@@type": "AST",
           id: this.id,
@@ -32880,7 +32889,7 @@ var require_commonjs6 = __commonJS({
     };
     exports.sep = defaultPlatform === "win32" ? path.win32.sep : path.posix.sep;
     exports.minimatch.sep = exports.sep;
-    exports.GLOBSTAR = Symbol("globstar **");
+    exports.GLOBSTAR = /* @__PURE__ */ Symbol("globstar **");
     exports.minimatch.GLOBSTAR = exports.GLOBSTAR;
     var qmark = "[^/]";
     var star = qmark + "*?";
