@@ -11494,13 +11494,13 @@ var require_mediaType = __commonJS({
     function formatMediaType(parsed, i) {
       var slash = parsed.type.indexOf("/");
       if (slash === -1) return null;
-      var q = parsed.parameters.q ? parseFloat(parsed.parameters.q) : 1;
+      var q2 = parsed.parameters.q ? parseFloat(parsed.parameters.q) : 1;
       delete parsed.parameters.q;
       return {
         type: parsed.type.slice(0, slash),
         subtype: parsed.type.slice(slash + 1),
         params: parsed.parameters,
-        q,
+        q: q2,
         i
       };
     }
@@ -17093,7 +17093,7 @@ var require_index_min = __commonJS({
     var V = (u, t, e, i) => {
       typeof G.emitWarning == "function" ? G.emitWarning(u, t, e, i) : console.error(`[${e}] ${t}: ${u}`);
     };
-    var q = (u) => !k.has(u);
+    var q2 = (u) => !k.has(u);
     var T = (u) => !!u && u === Math.floor(u) && u > 0 && isFinite(u);
     var H = (u) => T(u) ? u <= Math.pow(2, 8) ? Uint8Array : u <= Math.pow(2, 16) ? Uint16Array : u <= Math.pow(2, 32) ? Uint32Array : u <= Number.MAX_SAFE_INTEGER ? W : null : null;
     var W = class extends Array {
@@ -17228,7 +17228,7 @@ var require_index_min = __commonJS({
         if (this.#o === 0 && this.ttl === 0 && this.#c === 0) throw new TypeError("At least one of max, maxSize, or ttl is required");
         if (!this.ttlAutopurge && !this.#o && !this.#c) {
           let D = "LRU_CACHE_UNBOUNDED";
-          q(D) && (k.add(D), V("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.", "UnboundedCacheWarning", D, u));
+          q2(D) && (k.add(D), V("TTL caching without ttlAutopurge, max, or maxSize can result in unbounded memory consumption.", "UnboundedCacheWarning", D, u));
         }
       }
       getRemainingTTL(t) {
@@ -19980,7 +19980,7 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
       P.isReadable = ar;
       var lr = (n) => !!n && typeof n == "object" && n instanceof _e.EventEmitter && typeof n.write == "function" && typeof n.end == "function";
       P.isWritable = lr;
-      var $ = /* @__PURE__ */ Symbol("EOF"), q = /* @__PURE__ */ Symbol("maybeEmitEnd"), K = /* @__PURE__ */ Symbol("emittedEnd"), Bt = /* @__PURE__ */ Symbol("emittingEnd"), lt = /* @__PURE__ */ Symbol("emittedError"), It = /* @__PURE__ */ Symbol("closed"), ps = /* @__PURE__ */ Symbol("read"), Gt = /* @__PURE__ */ Symbol("flush"), ms = /* @__PURE__ */ Symbol("flushChunk"), L = /* @__PURE__ */ Symbol("encoding"), rt = /* @__PURE__ */ Symbol("decoder"), x = /* @__PURE__ */ Symbol("flowing"), ct = /* @__PURE__ */ Symbol("paused"), nt = /* @__PURE__ */ Symbol("resume"), T = /* @__PURE__ */ Symbol("buffer"), M = /* @__PURE__ */ Symbol("pipes"), C = /* @__PURE__ */ Symbol("bufferLength"), we = /* @__PURE__ */ Symbol("bufferPush"), zt = /* @__PURE__ */ Symbol("bufferShift"), k = /* @__PURE__ */ Symbol("objectMode"), O = /* @__PURE__ */ Symbol("destroyed"), be = /* @__PURE__ */ Symbol("error"), ye = /* @__PURE__ */ Symbol("emitData"), gs = /* @__PURE__ */ Symbol("emitEnd"), Se = /* @__PURE__ */ Symbol("emitEnd2"), I = /* @__PURE__ */ Symbol("async"), ve = /* @__PURE__ */ Symbol("abort"), Ut = /* @__PURE__ */ Symbol("aborted"), ut = /* @__PURE__ */ Symbol("signal"), Z = /* @__PURE__ */ Symbol("dataListeners"), D = /* @__PURE__ */ Symbol("discarded"), ft = (n) => Promise.resolve().then(n), cr = (n) => n(), ur = (n) => n === "end" || n === "finish" || n === "prefinish", fr = (n) => n instanceof ArrayBuffer || !!n && typeof n == "object" && n.constructor && n.constructor.name === "ArrayBuffer" && n.byteLength >= 0, dr = (n) => !Buffer.isBuffer(n) && ArrayBuffer.isView(n), $t = class {
+      var $ = /* @__PURE__ */ Symbol("EOF"), q2 = /* @__PURE__ */ Symbol("maybeEmitEnd"), K = /* @__PURE__ */ Symbol("emittedEnd"), Bt = /* @__PURE__ */ Symbol("emittingEnd"), lt = /* @__PURE__ */ Symbol("emittedError"), It = /* @__PURE__ */ Symbol("closed"), ps = /* @__PURE__ */ Symbol("read"), Gt = /* @__PURE__ */ Symbol("flush"), ms = /* @__PURE__ */ Symbol("flushChunk"), L = /* @__PURE__ */ Symbol("encoding"), rt = /* @__PURE__ */ Symbol("decoder"), x = /* @__PURE__ */ Symbol("flowing"), ct = /* @__PURE__ */ Symbol("paused"), nt = /* @__PURE__ */ Symbol("resume"), T = /* @__PURE__ */ Symbol("buffer"), M = /* @__PURE__ */ Symbol("pipes"), C = /* @__PURE__ */ Symbol("bufferLength"), we = /* @__PURE__ */ Symbol("bufferPush"), zt = /* @__PURE__ */ Symbol("bufferShift"), k = /* @__PURE__ */ Symbol("objectMode"), O = /* @__PURE__ */ Symbol("destroyed"), be = /* @__PURE__ */ Symbol("error"), ye = /* @__PURE__ */ Symbol("emitData"), gs = /* @__PURE__ */ Symbol("emitEnd"), Se = /* @__PURE__ */ Symbol("emitEnd2"), I = /* @__PURE__ */ Symbol("async"), ve = /* @__PURE__ */ Symbol("abort"), Ut = /* @__PURE__ */ Symbol("aborted"), ut = /* @__PURE__ */ Symbol("signal"), Z = /* @__PURE__ */ Symbol("dataListeners"), D = /* @__PURE__ */ Symbol("discarded"), ft = (n) => Promise.resolve().then(n), cr = (n) => n(), ur = (n) => n === "end" || n === "finish" || n === "prefinish", fr = (n) => n instanceof ArrayBuffer || !!n && typeof n == "object" && n.constructor && n.constructor.name === "ArrayBuffer" && n.byteLength >= 0, dr = (n) => !Buffer.isBuffer(n) && ArrayBuffer.isView(n), $t = class {
         src;
         dest;
         opts;
@@ -20079,10 +20079,10 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
         }
         read(t) {
           if (this[O]) return null;
-          if (this[D] = false, this[C] === 0 || t === 0 || t && t > this[C]) return this[q](), null;
+          if (this[D] = false, this[C] === 0 || t === 0 || t && t > this[C]) return this[q2](), null;
           this[k] && (t = null), this[T].length > 1 && !this[k] && (this[T] = [this[L] ? this[T].join("") : Buffer.concat(this[T], this[C])]);
           let e = this[ps](t || null, this[T][0]);
-          return this[q](), e;
+          return this[q2](), e;
         }
         [ps](t, e) {
           if (this[k]) this[zt]();
@@ -20093,10 +20093,10 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
           return this.emit("data", e), !this[T].length && !this[$] && this.emit("drain"), e;
         }
         end(t, e, s) {
-          return typeof t == "function" && (s = t, t = void 0), typeof e == "function" && (s = e, e = "utf8"), t !== void 0 && this.write(t, e), s && this.once("end", s), this[$] = true, this.writable = false, (this[x] || !this[ct]) && this[q](), this;
+          return typeof t == "function" && (s = t, t = void 0), typeof e == "function" && (s = e, e = "utf8"), t !== void 0 && this.write(t, e), s && this.once("end", s), this[$] = true, this.writable = false, (this[x] || !this[ct]) && this[q2](), this;
         }
         [nt]() {
-          this[O] || (!this[Z] && !this[M].length && (this[D] = true), this[ct] = false, this[x] = true, this.emit("resume"), this[T].length ? this[Gt]() : this[$] ? this[q]() : this.emit("drain"));
+          this[O] || (!this[Z] && !this[M].length && (this[D] = true), this[ct] = false, this[x] = true, this.emit("resume"), this[T].length ? this[Gt]() : this[$] ? this[q2]() : this.emit("drain"));
         }
         resume() {
           return this[nt]();
@@ -20166,7 +20166,7 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
         get emittedEnd() {
           return this[K];
         }
-        [q]() {
+        [q2]() {
           !this[Bt] && !this[K] && !this[O] && this[T].length === 0 && this[$] && (this[Bt] = true, this.emit("end"), this.emit("prefinish"), this.emit("finish"), this[It] && this.emit("close"), this[Bt] = false);
         }
         emit(t, ...e) {
@@ -20181,21 +20181,21 @@ globstar while`, t, d, e, u, m), this.matchOne(t.slice(d), e.slice(u), s)) retur
           } else if (t === "error") {
             this[lt] = s, super.emit(be, s);
             let r = !this[ut] || this.listeners("error").length ? super.emit("error", s) : false;
-            return this[q](), r;
+            return this[q2](), r;
           } else if (t === "resume") {
             let r = super.emit("resume");
-            return this[q](), r;
+            return this[q2](), r;
           } else if (t === "finish" || t === "prefinish") {
             let r = super.emit(t);
             return this.removeAllListeners(t), r;
           }
           let i = super.emit(t, ...e);
-          return this[q](), i;
+          return this[q2](), i;
         }
         [ye](t) {
           for (let s of this[M]) s.dest.write(t) === false && this.pause();
           let e = this[D] ? false : super.emit("data", t);
-          return this[q](), e;
+          return this[q2](), e;
         }
         [gs]() {
           return this[K] ? false : (this[K] = true, this.readable = false, this[I] ? (ft(() => this[Se]()), true) : this[Se]());
@@ -21776,7 +21776,7 @@ var require_verify = __commonJS({
       ];
       const stats = {};
       for (const step of steps) {
-        const label = step.name;
+        const label2 = step.name;
         const start = /* @__PURE__ */ new Date();
         const s = await step(cache, opts);
         if (s) {
@@ -21788,7 +21788,7 @@ var require_verify = __commonJS({
         if (!stats.runTime) {
           stats.runTime = {};
         }
-        stats.runTime[label] = end - start;
+        stats.runTime[label2] = end - start;
       }
       stats.runTime.total = stats.endTime - stats.startTime;
       opts.log.silly(
@@ -31022,7 +31022,7 @@ var require_guard = __commonJS({
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.isDefined = isDefined;
-    exports.isObject = isObject3;
+    exports.isObject = isObject4;
     exports.isStringArray = isStringArray;
     exports.isObjectArray = isObjectArray;
     exports.isStringRecord = isStringRecord;
@@ -31030,14 +31030,14 @@ var require_guard = __commonJS({
     function isDefined(val) {
       return val !== void 0;
     }
-    function isObject3(value) {
+    function isObject4(value) {
       return typeof value === "object" && value !== null;
     }
     function isStringArray(value) {
       return Array.isArray(value) && value.every((v) => typeof v === "string");
     }
     function isObjectArray(value) {
-      return Array.isArray(value) && value.every(isObject3);
+      return Array.isArray(value) && value.every(isObject4);
     }
     function isStringRecord(value) {
       return typeof value === "object" && value !== null && Object.keys(value).every((k) => typeof k === "string") && Object.values(value).every((v) => typeof v === "string");
@@ -34961,13 +34961,13 @@ var require_store = __commonJS({
         }
         this.root.verifyDelegate(models_1.MetadataKind.Snapshot, newSnapshot);
         if (this.snapshot) {
-          Object.entries(this.snapshot.signed.meta).forEach(([fileName, fileInfo]) => {
-            const newFileInfo = newSnapshot.signed.meta[fileName];
+          Object.entries(this.snapshot.signed.meta).forEach(([fileName2, fileInfo]) => {
+            const newFileInfo = newSnapshot.signed.meta[fileName2];
             if (!newFileInfo) {
-              throw new error_1.RepositoryError(`Missing file ${fileName} in new snapshot`);
+              throw new error_1.RepositoryError(`Missing file ${fileName2} in new snapshot`);
             }
             if (newFileInfo.version < fileInfo.version) {
-              throw new error_1.BadVersionError(`New version ${newFileInfo.version} of ${fileName} is less than current version ${fileInfo.version}`);
+              throw new error_1.BadVersionError(`New version ${newFileInfo.version} of ${fileName2} is less than current version ${fileInfo.version}`);
             }
           });
         }
@@ -35188,10 +35188,10 @@ var require_updater = __commonJS({
           targetFilePath = dir ? `${dir}/${filename}` : filename;
         }
         const targetUrl = url.join(targetBaseUrl, targetFilePath);
-        await this.fetcher.downloadFile(targetUrl, targetInfo.length, async (fileName) => {
-          await targetInfo.verify(fs.createReadStream(fileName));
+        await this.fetcher.downloadFile(targetUrl, targetInfo.length, async (fileName2) => {
+          await targetInfo.verify(fs.createReadStream(fileName2));
           log("WRITE %s", targetPath);
-          fs.copyFileSync(fileName, targetPath);
+          fs.copyFileSync(fileName2, targetPath);
         });
         return targetPath;
       }
@@ -35209,8 +35209,8 @@ var require_updater = __commonJS({
         }
         return;
       }
-      loadLocalMetadata(fileName) {
-        const filePath = path.join(this.dir, `${fileName}.json`);
+      loadLocalMetadata(fileName2) {
+        const filePath = path.join(this.dir, `${fileName2}.json`);
         log("READ %s", filePath);
         return fs.readFileSync(filePath);
       }
@@ -37357,6 +37357,36 @@ var StatementError = class extends PackslipError {
     super(code, message);
   }
 };
+var DeclaredIdentityError = class extends PackslipError {
+  /** The field of the statement's `predicate.identity` that differs. */
+  field;
+  /** What the statement declares. */
+  declared;
+  /** What the signing certificate says. */
+  actual;
+  constructor(field, declared, actual) {
+    super("declared-identity", field === "scheme" ? `the statement declares scheme ${declared}, but the bundle was signed by an OIDC identity` : field === "key_id" ? `the statement declares signer ${JSON.stringify(declared)}, but the bundle was signed by ${JSON.stringify(actual)}` : `the statement declares issuer ${JSON.stringify(declared)}, but the certificate says ${JSON.stringify(actual)}`);
+    this.field = field;
+    this.declared = declared;
+    this.actual = actual;
+  }
+};
+var ProjectSignerError = class extends PackslipError {
+  project;
+  reason;
+  actualIdentity;
+  actualIssuer;
+  /** The Source Repository URI the certificate records, if any. */
+  sourceRepository;
+  constructor(message, details) {
+    super("project-signer", message);
+    this.project = details.project;
+    this.reason = details.reason;
+    this.actualIdentity = details.identity;
+    this.actualIssuer = details.issuer;
+    this.sourceRepository = details.sourceRepository;
+  }
+};
 var ArtifactNotFoundError = class extends PackslipError {
   assetName;
   constructor(assetName) {
@@ -37378,84 +37408,766 @@ var DigestMismatchError = class extends PackslipError {
   }
 };
 
-// node_modules/packslip/dist/statement.js
+// node_modules/packslip/dist/project.js
+function forgeName(project) {
+  const [host, ...path] = project.split("/");
+  if (host === "github.com" && path.length >= 2 && path[0] !== "" && path[1] !== "") {
+    return { host, repository: `${path[0]}/${path[1]}`, subpath: path.slice(2).join("/") };
+  }
+  if (host === "gitlab.com" && path.length >= 1 && path.every((segment) => segment !== "")) {
+    return { host, repository: path.join("/"), subpath: "" };
+  }
+  return void 0;
+}
+var foldAscii = (text) => text.replace(/[A-Z]/g, (c) => c.toLowerCase());
+function sameProject(a, b) {
+  const x = forgeName(a);
+  const y = forgeName(b);
+  if (x === void 0 || y === void 0)
+    return a === b;
+  return x.host === y.host && foldAscii(x.repository) === foldAscii(y.repository) && x.subpath === y.subpath;
+}
+function repositorySpan(url) {
+  if (url.startsWith("https://github.com/")) {
+    const start = "https://github.com/".length;
+    const owner = url.indexOf("/", start);
+    const repo = owner < 0 ? -1 : url.indexOf("/", owner + 1);
+    return [start, repo < 0 ? url.length : repo];
+  }
+  if (url.startsWith("https://gitlab.com/")) {
+    const start = "https://gitlab.com/".length;
+    const config = url.indexOf("//", start);
+    return [start, config < 0 ? url.length : config];
+  }
+  return void 0;
+}
+function identityHasPrefix(identity, prefix) {
+  const span = repositorySpan(prefix);
+  if (span === void 0)
+    return identity.startsWith(prefix);
+  const [start, end] = span;
+  return identity.length >= end && identity.slice(0, start) === prefix.slice(0, start) && foldAscii(identity.slice(start, end)) === foldAscii(prefix.slice(start, end)) && identity.slice(end).startsWith(prefix.slice(end));
+}
+function sameIdentity(actual, expected) {
+  const span = repositorySpan(expected);
+  if (span === void 0 || actual.length !== expected.length)
+    return actual === expected;
+  const [start, end] = span;
+  return actual.slice(0, start) === expected.slice(0, start) && foldAscii(actual.slice(start, end)) === foldAscii(expected.slice(start, end)) && actual.slice(end) === expected.slice(end);
+}
+
+// node_modules/packslip/dist/signer.js
+var GITHUB_ISSUER = "https://token.actions.githubusercontent.com";
+var GITLAB_ISSUER = "https://gitlab.com";
+var OID_SOURCE_REPOSITORY_URI = "1.3.6.1.4.1.57264.1.12";
+function certificateSigner(signer) {
+  const identity = signer.identity?.subjectAlternativeName;
+  const issuer = signer.identity?.extensions?.issuer;
+  if (identity === void 0 || issuer === void 0) {
+    throw new IdentityError("the bundle is not signed with a certificate that names an identity and issuer");
+  }
+  const extension = signer.identity?.oids?.find((entry) => entry.oid?.id.join(".") === OID_SOURCE_REPOSITORY_URI);
+  let sourceRepository;
+  if (extension !== void 0) {
+    const text = derUtf8String(extension.value);
+    if (text === void 0) {
+      throw new IdentityError(`the certificate's Source Repository URI extension is malformed`, { identity, issuer });
+    }
+    sourceRepository = text === "" ? void 0 : text;
+  }
+  return { identity, issuer, sourceRepository };
+}
+function derUtf8String(der) {
+  if (der[0] !== 12 || der.length < 2)
+    return void 0;
+  let length = der[1] ?? 0;
+  let offset = 2;
+  if (length & 128) {
+    const octets = length & 127;
+    if (octets === 0 || octets > 3 || der.length < 2 + octets)
+      return void 0;
+    length = 0;
+    for (let i = 0; i < octets; i++)
+      length = length * 256 + (der[2 + i] ?? 0);
+    offset += octets;
+  }
+  if (offset + length !== der.length)
+    return void 0;
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(der.subarray(offset));
+  } catch {
+    return void 0;
+  }
+}
+function checkDeclaredIdentity(declared, signer) {
+  if (declared.scheme !== "sigstore-oidc") {
+    throw new DeclaredIdentityError("scheme", declared.scheme, "sigstore-oidc");
+  }
+  if (declared.key_id !== signer.identity) {
+    throw new DeclaredIdentityError("key_id", declared.key_id, signer.identity);
+  }
+  if (declared.issuer !== signer.issuer) {
+    throw new DeclaredIdentityError("issuer", declared.issuer ?? "", signer.issuer);
+  }
+}
+function forgeRepository(project) {
+  const [host, ...path] = project.split("/");
+  if (host === "github.com") {
+    const [owner, repo] = path;
+    return owner && repo ? { host, repository: `${owner}/${repo}` } : void 0;
+  }
+  if (host === "gitlab.com" && path.length > 0 && path.every((segment) => segment !== "")) {
+    return { host, repository: path.join("/") };
+  }
+  return void 0;
+}
+function checkProjectSigner(project, signer) {
+  const forge = forgeRepository(project);
+  if (forge === void 0)
+    return;
+  const details = { project, identity: signer.identity, issuer: signer.issuer, sourceRepository: signer.sourceRepository };
+  const issuer = forge.host === "gitlab.com" ? GITLAB_ISSUER : GITHUB_ISSUER;
+  if (signer.issuer !== issuer) {
+    throw new ProjectSignerError(`${project} is signed through issuer ${JSON.stringify(signer.issuer)}, expected ${issuer}`, {
+      ...details,
+      reason: "issuer"
+    });
+  }
+  const repository = `https://${forge.host}/${forge.repository}`;
+  if (signer.sourceRepository === void 0) {
+    const prefix = forge.host === "gitlab.com" ? `${repository}//` : `${repository}/`;
+    if (!identityHasPrefix(signer.identity, prefix)) {
+      throw new ProjectSignerError(`signed by ${signer.identity}, which is not a workflow of ${repository}`, {
+        ...details,
+        reason: "signer"
+      });
+    }
+  } else if (!sameIdentity(signer.sourceRepository, repository)) {
+    throw new ProjectSignerError(`the certificate's source repository is ${signer.sourceRepository}, not ${repository}`, {
+      ...details,
+      reason: "source-repository"
+    });
+  }
+}
+
+// node_modules/packslip/dist/model.js
+var STATEMENT_TYPE = "https://in-toto.io/Statement/v1";
 var RELEASE_PREDICATE_TYPE = "https://packslip.dev/release/v1";
-var STATEMENT_TYPES = ["https://in-toto.io/Statement/v1"];
+var SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+var TOKEN = /^[a-z0-9][a-z0-9_.-]*$/;
 var SHA256 = /^[0-9a-f]{64}$/;
 var SHA512 = /^[0-9a-f]{128}$/;
+var RFC3339 = /^(\d{4})-(\d{2})-(\d{2})[Tt ](\d{2}):(\d{2}):(\d{2})(?:\.\d{1,9})?(?:[Zz]|[+-](\d{2}):(\d{2}))$/;
+var BARE_FORMATS = ["raw", "gz", "xz", "zst", "bz2"];
 function isObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
-function parseStatement(payload) {
+var q = (value) => JSON.stringify(value);
+var Fields = class _Fields {
+  #value;
+  #path;
+  constructor(value, path) {
+    if (!isObject(value))
+      throw new StatementError(`${path === "" ? "the statement" : path} must be an object`);
+    this.#value = value;
+    this.#path = path;
+  }
+  at(key) {
+    return this.#path === "" ? key : `${this.#path}.${key}`;
+  }
+  get(key) {
+    return Object.hasOwn(this.#value, key) ? this.#value[key] : void 0;
+  }
+  #required(key) {
+    const value = this.get(key);
+    if (value === void 0)
+      throw new StatementError(`${this.at(key)} is required`);
+    return value;
+  }
+  string(key) {
+    const value = this.#required(key);
+    if (typeof value !== "string")
+      throw new StatementError(`${this.at(key)} must be a string`);
+    return value;
+  }
+  optionalString(key) {
+    const value = this.get(key);
+    if (value === void 0 || value === null)
+      return void 0;
+    if (typeof value !== "string")
+      throw new StatementError(`${this.at(key)} must be a string`);
+    return value;
+  }
+  optionalBoolean(key) {
+    const value = this.get(key);
+    if (value === void 0 || value === null)
+      return void 0;
+    if (typeof value !== "boolean")
+      throw new StatementError(`${this.at(key)} must be a boolean`);
+    return value;
+  }
+  // A whole number of bytes. Number.isSafeInteger also refuses a size above
+  // 2^53 - 1, which the Rust crate's u64 takes, because no JavaScript number
+  // holds it exactly for comparison with a downloaded file's size.
+  size(key) {
+    const value = this.#required(key);
+    if (!Number.isSafeInteger(value) || value < 0) {
+      throw new StatementError(`${this.at(key)} must be a non-negative integer`);
+    }
+    return value;
+  }
+  object(key) {
+    return new _Fields(this.#required(key), this.at(key));
+  }
+  optionalObject(key) {
+    const value = this.get(key);
+    return value === void 0 || value === null ? void 0 : new _Fields(value, this.at(key));
+  }
+  list(key, each, required = false) {
+    const value = required ? this.#required(key) : this.get(key);
+    if (value === void 0)
+      return [];
+    if (!Array.isArray(value))
+      throw new StatementError(`${this.at(key)} must be an array`);
+    return Array.from(value, (item, i) => each(item, `${this.at(key)}[${i}]`));
+  }
+  optionalList(key, each) {
+    const value = this.get(key);
+    return value === void 0 || value === null ? void 0 : this.list(key, each);
+  }
+  strings(key) {
+    return this.list(key, stringAt);
+  }
+  map(key) {
+    const value = this.get(key);
+    if (value === void 0)
+      return {};
+    if (!isObject(value))
+      throw new StatementError(`${this.at(key)} must be an object`);
+    return value;
+  }
+  stringMap(key) {
+    const value = this.map(key);
+    for (const [name, entry] of Object.entries(value)) {
+      if (typeof entry !== "string")
+        throw new StatementError(`${this.at(key)}.${name} must be a string`);
+    }
+    return value;
+  }
+};
+function stringAt(value, path) {
+  if (typeof value !== "string")
+    throw new StatementError(`${path} must be a string`);
+  return value;
+}
+function readSubject(value, path) {
+  const fields = new Fields(value, path);
+  const digest = fields.object("digest");
+  return {
+    name: fields.string("name"),
+    digest: { sha256: digest.string("sha256"), sha512: digest.optionalString("sha512") }
+  };
+}
+function readBin(value, path) {
+  if (typeof value === "string")
+    return { path: value, name: commandName(fileName(value)) };
+  if (isObject(value) && typeof value["path"] === "string" && typeof value["name"] === "string") {
+    return { path: value["path"], name: commandName(value["name"]) };
+  }
+  throw new StatementError(`${path} must be a path, or an object with a path and a name`);
+}
+function readRequires(fields) {
+  return {
+    os_min: fields.optionalString("os_min"),
+    glibc_min: fields.optionalString("glibc_min"),
+    libs: fields.optionalList("libs", stringAt),
+    bin: fields.list("bin", (item, path) => {
+      const bin = new Fields(item, path);
+      return { name: bin.string("name"), min: bin.optionalString("min") };
+    })
+  };
+}
+function readArtifact(value, path) {
+  const fields = new Fields(value, path);
+  const requires = fields.optionalObject("requires");
+  return {
+    name: fields.string("name"),
+    os: fields.optionalString("os"),
+    arch: fields.optionalString("arch"),
+    libc: fields.optionalString("libc"),
+    variant: fields.optionalString("variant"),
+    size: fields.size("size"),
+    url: fields.optionalString("url"),
+    // Optional here so that its absence is reported by name below.
+    format: fields.optionalString("format"),
+    bin: fields.list("bin", readBin),
+    requires: requires === void 0 ? void 0 : readRequires(requires),
+    provenance: fields.strings("provenance"),
+    extensions: fields.map("extensions")
+  };
+}
+function readResource(value, path) {
+  const fields = new Fields(value, path);
+  return {
+    kind: fields.string("kind"),
+    artifact: fields.optionalString("artifact"),
+    os: fields.optionalString("os"),
+    arch: fields.optionalString("arch"),
+    libc: fields.optionalString("libc"),
+    shell: fields.optionalString("shell"),
+    shells: fields.strings("shells"),
+    name: fields.optionalString("name"),
+    bin: fields.optionalString("bin"),
+    format: fields.optionalString("format"),
+    archive: fields.optionalString("archive"),
+    asset: fields.optionalString("asset"),
+    url: fields.optionalString("url"),
+    repo: fields.optionalString("repo"),
+    exec: fields.strings("exec"),
+    env: fields.stringMap("env"),
+    extensions: fields.map("extensions")
+  };
+}
+function readIdentity(fields) {
+  const scheme = fields.string("scheme");
+  if (scheme !== "sigstore-oidc" && scheme !== "sigstore-key") {
+    throw new StatementError(`${fields.at("scheme")} must be sigstore-oidc or sigstore-key, got ${q(scheme)}`);
+  }
+  return {
+    scheme,
+    key_id: fields.string("key_id"),
+    issuer: fields.optionalString("issuer"),
+    pin_workflow: fields.optionalBoolean("pin_workflow")
+  };
+}
+function readPredicate(fields) {
+  const source = fields.optionalObject("source");
+  const attested = fields.get("attested_by") === void 0 ? "vendor" : fields.get("attested_by");
+  if (attested !== "vendor" && attested !== "repackager") {
+    throw new StatementError(`${fields.at("attested_by")} must be vendor or repackager`);
+  }
+  return {
+    project: fields.string("project"),
+    version: fields.string("version"),
+    published_at: fields.string("published_at"),
+    source: source === void 0 ? void 0 : { repo: source.string("repo"), commit: source.optionalString("commit"), tag: source.optionalString("tag") },
+    artifacts: fields.list("artifacts", readArtifact, true),
+    resources: fields.list("resources", readResource),
+    identity: readIdentity(fields.object("identity")),
+    attested_by: attested,
+    evidence: fields.list("evidence", (item, path) => {
+      const evidence = new Fields(item, path);
+      return { kind: evidence.string("kind"), detail: evidence.optionalString("detail") };
+    }),
+    notes_url: fields.optionalString("notes_url"),
+    extensions: fields.map("extensions")
+  };
+}
+function checkTypes(type, predicateType) {
+  if (type !== STATEMENT_TYPE)
+    throw new StatementError(`_type must be ${STATEMENT_TYPE}, got ${q(type)}`);
+  if (predicateType !== RELEASE_PREDICATE_TYPE) {
+    throw new StatementError(`predicateType must be ${RELEASE_PREDICATE_TYPE}, got ${q(predicateType)}`, "predicate-type");
+  }
+}
+function checkStatement(value) {
+  const fields = new Fields(value, "");
+  checkTypes(fields.string("_type"), fields.string("predicateType"));
+  const statement = {
+    _type: fields.string("_type"),
+    subject: fields.list("subject", readSubject, true),
+    predicateType: fields.string("predicateType"),
+    predicate: readPredicate(fields.object("predicate"))
+  };
+  validateStatement(statement);
+  return statement;
+}
+function validateStatement(s) {
+  checkTypes(s._type, s.predicateType);
+  const subjects = /* @__PURE__ */ new Set();
+  for (const subject of s.subject) {
+    if (subjects.has(subject.name))
+      throw new StatementError(`subject ${q(subject.name)} appears more than once`);
+    subjects.add(subject.name);
+    if (!SHA256.test(subject.digest.sha256)) {
+      throw new StatementError(`sha256 for ${q(subject.name)} must be 64 lowercase hex characters`);
+    }
+    if (subject.digest.sha512 !== void 0 && !SHA512.test(subject.digest.sha512)) {
+      throw new StatementError(`sha512 for ${q(subject.name)} must be 128 lowercase hex characters`);
+    }
+  }
+  const p = s.predicate;
+  if (!validProject(p.project)) {
+    throw new StatementError(`project must be a host path such as github.com/owner/repo or tool.example.com, got ${q(p.project)}`);
+  }
+  if (p.version === "")
+    throw new StatementError("version must not be empty");
+  if (!SEMVER.test(p.version)) {
+    throw new StatementError(`version must be semver 2.0.0 (MAJOR.MINOR.PATCH, with an optional prerelease part), got ${q(p.version)}`);
+  }
+  if (!validTimestamp(p.published_at))
+    throw new StatementError(`published_at must be RFC 3339, got ${q(p.published_at)}`);
+  if (p.identity.scheme === "sigstore-oidc") {
+    if (p.identity.key_id === "")
+      throw new StatementError("a sigstore-oidc identity needs a key_id, the certificate identity");
+    if (p.identity.issuer === void 0 || p.identity.issuer === "") {
+      throw new StatementError("a sigstore-oidc identity needs an issuer");
+    }
+  }
+  if (p.artifacts.length === 0)
+    throw new StatementError("at least one artifact is required");
+  checkExtensions("the release", p.extensions);
+  const artifacts = /* @__PURE__ */ new Set();
+  p.artifacts.forEach((artifact, i) => {
+    const name = q(artifact.name);
+    if (artifacts.has(artifact.name))
+      throw new StatementError(`artifact ${name} appears more than once`);
+    artifacts.add(artifact.name);
+    checkExtensions(`artifact ${name}`, artifact.extensions);
+    if (!subjects.has(artifact.name))
+      throw new StatementError(`artifact ${name} has no matching subject`);
+    if (artifact.format === void 0) {
+      throw new StatementError(`artifact ${name} has no format, so no consumer can select it`);
+    }
+    checkTokens(`artifact ${name}`, {
+      os: artifact.os,
+      arch: artifact.arch,
+      libc: artifact.libc,
+      variant: artifact.variant,
+      format: artifact.format
+    });
+    const bare = isBareFormat(artifact.format) ? bareFileName(artifact.name, artifact.format) : void 0;
+    for (const bin of artifact.bin) {
+      if (bin.path === "")
+        throw new StatementError(`artifact ${name} has an executable with an empty path`);
+      if (bin.name === "")
+        throw new StatementError(`artifact ${name} has an executable with an empty name`);
+      if (bin.name.includes("/")) {
+        throw new StatementError(`artifact ${name} has an executable name containing a slash: ${q(bin.name)}`);
+      }
+      if (commandName(bin.name) !== bin.name) {
+        throw new StatementError(`artifact ${name} has an executable name ending in .exe: ${q(bin.name)}; a name is the command as typed, and the path carries the extension`);
+      }
+      if (bare !== void 0 && bin.path !== bare) {
+        throw new StatementError(`artifact ${name} is a bare executable, so its bin must be ${q(bare)}, not ${q(bin.path)}`);
+      }
+    }
+    const other = p.artifacts.slice(0, i).find((a) => selectorsEqual(a, artifact));
+    if (other !== void 0) {
+      throw new StatementError(`artifacts ${q(other.name)} and ${name} describe the same os, arch, libc, variant, and format; give one a variant`);
+    }
+  });
+  const binNames = new Set(p.artifacts.flatMap((a) => a.bin.map((b) => commandName(b.name))));
+  const isBin = (name) => binNames.has(commandName(name));
+  for (const artifact of p.artifacts) {
+    if (artifact.requires !== void 0)
+      validateRequires(q(artifact.name), artifact.requires, isBin);
+  }
+  const assets = /* @__PURE__ */ new Set();
+  for (const resource of p.resources) {
+    const asset = validateResource(resource, p, subjects, binNames);
+    if (asset !== void 0)
+      assets.add(asset);
+  }
+  for (const subject of s.subject) {
+    if (!artifacts.has(subject.name) && !assets.has(subject.name)) {
+      throw new StatementError(`subject ${q(subject.name)} has no matching artifact`);
+    }
+  }
+}
+function validateRequires(name, requires, isBin) {
+  const libs = /* @__PURE__ */ new Set();
+  for (const lib of requires.libs ?? []) {
+    if (!validLib(lib)) {
+      throw new StatementError(`artifact ${name} requires library ${q(lib)}; a library is named as its loader resolves it, such as libssl.so.3`);
+    }
+    if (libs.has(lib))
+      throw new StatementError(`artifact ${name} requires library ${q(lib)} twice`);
+    libs.add(lib);
+  }
+  const commands = /* @__PURE__ */ new Set();
+  for (const required of requires.bin) {
+    if (!validRequiredBin(required.name)) {
+      throw new StatementError(`artifact ${name} requires command ${q(required.name)}; a command is a bare name such as java`);
+    }
+    if (required.min !== void 0 && !validMin(required.min)) {
+      throw new StatementError(`artifact ${name} requires command ${q(required.name)} with minimum ${q(required.min)}; a minimum starts with a digit, as in 17 or 3.12`);
+    }
+    if (commands.has(required.name))
+      throw new StatementError(`artifact ${name} requires command ${q(required.name)} twice`);
+    commands.add(required.name);
+    if (isBin(required.name)) {
+      throw new StatementError(`artifact ${name} requires command ${q(required.name)}, which the release itself provides`);
+    }
+  }
+}
+function sourceOf(r) {
+  const sources = [];
+  if (r.archive !== void 0)
+    sources.push("archive");
+  if (r.asset !== void 0)
+    sources.push("asset");
+  if (r.repo !== void 0)
+    sources.push("repo");
+  if (r.exec.length > 0)
+    sources.push("exec");
+  return sources.length === 1 ? sources[0] : void 0;
+}
+function label(r) {
+  let text = r.kind;
+  for (const part of [r.format, r.bin, r.shell, r.name])
+    if (part !== void 0)
+      text += `/${part}`;
+  if (r.shells.length > 0)
+    text += `/${r.shells.join(",")}`;
+  return text;
+}
+function validateResource(r, p, subjects, binNames) {
+  const name = q(label(r));
+  const isBin = (bin) => binNames.has(commandName(bin));
+  if (r.kind === "")
+    throw new StatementError("a resource has an empty kind");
+  checkExtensions(`resource ${name}`, r.extensions);
+  if (r.archive !== void 0 && r.artifact !== void 0) {
+    const format = p.artifacts.find((a) => a.name === r.artifact)?.format;
+    if (format !== void 0 && isBareFormat(format)) {
+      throw new StatementError(`resource ${name} names a path inside artifact ${q(r.artifact)}, which is a bare ${format} executable and holds no paths`);
+    }
+  }
+  if (r.artifact !== void 0 && !p.artifacts.some((a) => fits(r, a))) {
+    throw new StatementError(`resource ${name} names artifact ${q(r.artifact)}, which is absent or outside its platform scope`);
+  }
+  const source = sourceOf(r);
+  if (source === void 0)
+    throw new StatementError(`resource ${name} must have exactly one of archive, asset, repo, exec`);
+  checkTokens(`resource ${name}`, { os: r.os, arch: r.arch, libc: r.libc });
+  let asset;
+  switch (source) {
+    case "archive":
+      if (!validRelativePath(r.archive ?? "")) {
+        throw new StatementError(`resource ${name}: archive path must be relative with no empty or .. segments`);
+      }
+      break;
+    case "asset":
+      asset = r.asset ?? "";
+      if (!subjects.has(asset))
+        throw new StatementError(`resource ${name} names asset ${q(asset)}, which is not a subject`);
+      break;
+    case "repo":
+      if (!validRelativePath(r.repo ?? "")) {
+        throw new StatementError(`resource ${name}: repo path must be relative with no empty or .. segments`);
+      }
+      if (p.source?.commit === void 0) {
+        throw new StatementError(`resource ${name} comes from the repository, which needs source.commit`);
+      }
+      break;
+    case "exec": {
+      const program = r.exec[0] ?? "";
+      if (!isBin(program)) {
+        throw new StatementError(`resource ${name} runs ${q(program)}, which is not a bin name of any artifact`);
+      }
+      break;
+    }
+  }
+  const env = Object.keys(r.env);
+  if (env.length > 0 && source !== "exec")
+    throw new StatementError(`resource ${name} has env but its source is not exec`);
+  const badName = env.find((key) => key === "" || key.includes("=") || key.includes("\0"));
+  if (badName !== void 0) {
+    throw new StatementError(`resource ${name} has an env variable named ${q(badName)}; a name is non-empty and holds no = or NUL`);
+  }
+  if (r.url !== void 0 && source !== "asset") {
+    throw new StatementError(`resource ${name} has a url but its source is not an asset`);
+  }
+  if (r.kind === "completion" || r.kind === "man") {
+    if (r.bin !== void 0 && !isBin(r.bin)) {
+      throw new StatementError(`resource ${name} is for ${q(r.bin)}, which is not a bin name of any artifact`);
+    }
+    if (r.bin === void 0 && binNames.size > 1) {
+      throw new StatementError(`resource ${name} does not say which executable it is for, and the release has several: ${[...binNames].sort().join(", ")}`);
+    }
+  }
+  switch (r.kind) {
+    case "completion": {
+      if (r.shell !== void 0 !== (r.shells.length === 0)) {
+        throw new StatementError(`completion ${name} needs exactly one of shell or shells`);
+      }
+      const badShell = [...r.shell === void 0 ? [] : [r.shell], ...r.shells].find((shell) => !validShell(shell));
+      if (badShell !== void 0) {
+        throw new StatementError(`completion ${name} names shell ${q(badShell)}; a shell is a lowercase word such as zsh`);
+      }
+      const mentionsShell = [...r.exec, ...Object.values(r.env)].some((value) => value.includes("{shell}"));
+      if (source === "exec" && r.shell !== void 0 || r.shells.length > 0 && (source !== "exec" || !mentionsShell)) {
+        throw new StatementError(`completion ${name} lists shells, so its source must be exec with a {shell} placeholder`);
+      }
+      break;
+    }
+    case "cli-spec":
+      if (r.format === void 0 || r.bin === void 0)
+        throw new StatementError(`cli-spec ${name} needs format and bin`);
+      if (!isBin(r.bin)) {
+        throw new StatementError(`cli-spec ${name} describes ${q(r.bin)}, which is not a bin name of any artifact`);
+      }
+      break;
+    case "skill":
+      if (r.name === void 0 || r.name === "" || r.name.includes("/")) {
+        throw new StatementError(`skill ${name} needs a name without a slash`);
+      }
+      break;
+    case "app":
+      if (source !== "archive")
+        throw new StatementError(`app ${name} must come from an archive`);
+      break;
+    case "sbom":
+      if (r.format === void 0 || source === "exec") {
+        throw new StatementError(`sbom ${name} needs a format (cyclonedx or spdx) and a static source, not exec`);
+      }
+      break;
+  }
+  return asset;
+}
+function checkExtensions(owner, extensions) {
+  if (Object.hasOwn(extensions, ""))
+    throw new StatementError(`${owner} has an extension with an empty key`);
+}
+function checkTokens(owner, values) {
+  for (const [field, value] of Object.entries(values)) {
+    if (value !== void 0 && !TOKEN.test(value)) {
+      throw new StatementError(`${owner} has ${field} ${q(value)}; a value is a lowercase word of letters, digits, _, -, and .`);
+    }
+  }
+}
+function selectorsEqual(a, b) {
+  return a.os === b.os && a.arch === b.arch && a.libc === b.libc && a.variant === b.variant && a.format === b.format && a.format !== void 0;
+}
+function fits(r, a) {
+  const insideBareArtifact = r.archive !== void 0 && a.format !== void 0 && isBareFormat(a.format);
+  return !insideBareArtifact && (r.artifact === void 0 || r.artifact === a.name) && (r.os === void 0 || r.os === a.os) && (r.arch === void 0 || r.arch === a.arch) && (r.libc === void 0 || r.libc === a.libc);
+}
+function isBareFormat(format) {
+  return BARE_FORMATS.includes(format);
+}
+function bareFileName(name, format) {
+  if (format === "raw" || !name.endsWith(`.${format}`))
+    return name;
+  return name.slice(0, -(format.length + 1));
+}
+function validProject(project) {
+  const [host = "", ...segments] = project.split("/");
+  const hostOk = host.includes(".") && !host.startsWith(".") && !host.endsWith(".") && !host.includes("..") && host.split(".").every((label2) => label2 !== "" && !label2.startsWith("-") && !label2.endsWith("-") && /^[a-z0-9-]+$/.test(label2));
+  return hostOk && segments.every((segment) => segment !== "." && segment !== ".." && /^[A-Za-z0-9._~-]+$/.test(segment));
+}
+function validTimestamp(value) {
+  const match = RFC3339.exec(value);
+  if (match === null)
+    return false;
+  const [year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, offsetHour = 0, offsetMinute = 0] = match.slice(1).map((part) => Number(part ?? 0));
+  const leap = year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+  return days !== void 0 && day >= 1 && day <= days && hour <= 23 && minute <= 59 && // A leap second is accepted, as the Rust crate's parser accepts one.
+  second <= 60 && offsetHour <= 23 && offsetMinute <= 59;
+}
+function validRelativePath(path) {
+  return path !== "" && !path.startsWith("/") && path.split("/").every((segment) => segment !== "" && segment !== "..");
+}
+function validLib(name) {
+  return name !== "" && !/[/\\\x00-\x20\x7f]/.test(name);
+}
+function validRequiredBin(name) {
+  return validLib(name) && !/\.exe$/i.test(name);
+}
+function validMin(min) {
+  return /^[0-9][A-Za-z0-9.+-]*$/.test(min);
+}
+function validShell(shell) {
+  return /^[a-z0-9_-]+$/.test(shell);
+}
+function fileName(path) {
+  return path.slice(path.lastIndexOf("/") + 1);
+}
+function commandName(name) {
+  return /\.exe$/i.test(name) ? name.slice(0, -4) : name;
+}
+
+// node_modules/packslip/dist/statement.js
+function isObject2(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function parsePayload(payload) {
   let statement;
   try {
     statement = JSON.parse(Buffer.from(payload, "base64").toString("utf8"));
-  } catch (cause) {
+  } catch {
     throw new StatementError("the signed payload is not valid JSON");
   }
-  if (!isObject(statement))
+  if (!isObject2(statement))
     throw new StatementError("the signed payload is not an object");
   return statement;
 }
-function parseSubjects(value) {
-  if (!Array.isArray(value) || value.length === 0)
-    throw new StatementError("the statement has no subjects");
-  const seen = /* @__PURE__ */ new Set();
-  return value.map((entry) => {
-    const digest = isObject(entry) ? entry["digest"] : void 0;
-    if (!isObject(entry) || typeof entry["name"] !== "string" || !isObject(digest)) {
-      throw new StatementError("a subject needs a name and a digest");
-    }
-    const name = entry["name"];
-    if (seen.has(name))
-      throw new StatementError(`the statement lists ${JSON.stringify(name)} twice`);
-    seen.add(name);
-    const sha256 = digest["sha256"];
-    const sha512 = digest["sha512"];
-    if (typeof sha256 !== "string" || !SHA256.test(sha256)) {
-      throw new StatementError(`${name}: sha256 must be 64 lowercase hexadecimal characters`);
-    }
-    if (sha512 !== void 0 && (typeof sha512 !== "string" || !SHA512.test(sha512))) {
-      throw new StatementError(`${name}: sha512 must be 128 lowercase hexadecimal characters`);
-    }
-    return { name, digest: sha512 === void 0 ? { sha256 } : { sha256, sha512 } };
-  });
+function readRelease(payload) {
+  const raw = parsePayload(payload);
+  const model = checkStatement(raw);
+  const subject = model.subject.map(({ name, digest: { sha256, sha512 } }) => ({
+    name,
+    digest: sha512 === void 0 ? { sha256 } : { sha256, sha512 }
+  }));
+  return {
+    statement: {
+      _type: model._type,
+      subject,
+      predicateType: RELEASE_PREDICATE_TYPE,
+      predicate: raw["predicate"]
+    },
+    model
+  };
 }
-function readStatement(payload, expect) {
-  const statement = parseStatement(payload);
-  const type = statement["_type"];
-  if (typeof type !== "string" || !STATEMENT_TYPES.includes(type)) {
-    throw new StatementError("the signed payload is not an in-toto statement");
-  }
-  if (statement["predicateType"] !== RELEASE_PREDICATE_TYPE) {
-    throw new StatementError(`the predicate type is ${JSON.stringify(statement["predicateType"])}, not ${RELEASE_PREDICATE_TYPE}`, "predicate-type");
-  }
-  const predicate = statement["predicate"];
-  if (!isObject(predicate) || typeof predicate["project"] !== "string" || typeof predicate["version"] !== "string" || !Array.isArray(predicate["artifacts"])) {
-    throw new StatementError("the predicate needs a project, a version, and artifacts");
-  }
-  for (const artifact of predicate["artifacts"]) {
-    if (!isObject(artifact) || typeof artifact["name"] !== "string" || artifact["size"] !== void 0 && !(Number.isSafeInteger(artifact["size"]) && artifact["size"] >= 0)) {
-      throw new StatementError("each artifact needs a name and, if present, a non-negative integer size");
-    }
-  }
-  const subject = parseSubjects(statement["subject"]);
-  if (expect.project !== void 0 && predicate["project"] !== expect.project) {
-    throw new StatementError(`the statement is for ${predicate["project"]}, not ${expect.project}`, "project");
+function checkExpected(model, expect) {
+  if (expect.project !== void 0 && !sameProject(model.predicate.project, expect.project)) {
+    throw new StatementError(`the statement is for ${model.predicate.project}, not ${expect.project}`, "project");
   }
   if (expect.tag !== void 0) {
-    const source = predicate["source"];
-    const tag2 = isObject(source) ? source["tag"] : void 0;
+    const tag2 = model.predicate.source?.tag;
     if (tag2 !== expect.tag) {
       throw new StatementError(`the statement's source tag is ${JSON.stringify(tag2)}, not ${JSON.stringify(expect.tag)}`, "tag");
     }
   }
-  return { _type: type, subject, predicateType: RELEASE_PREDICATE_TYPE, predicate };
+}
+
+// node_modules/packslip/dist/policy.js
+function checkOptions(options) {
+  if (options.allowOtherRepository !== true)
+    return;
+  if (options.project === void 0) {
+    throw new TypeError("allowOtherRepository lifts the repository requirement a project brings, so it needs a project");
+  }
+  if (typeof options.identity !== "string" && typeof options.identity !== "function") {
+    throw new TypeError("allowOtherRepository needs an identity that names the signer it accepts");
+  }
+}
+function checkSigned(certificate, payload, options) {
+  const { identity, issuer } = certificate;
+  const identityOk = typeof options.identity === "string" ? sameIdentity(identity, options.identity) : options.identity(identity);
+  if (!identityOk) {
+    throw new IdentityError(`the signing identity ${identity} is not the expected one`, { identity, issuer });
+  }
+  if (issuer !== options.issuer) {
+    throw new IdentityError(`the certificate issuer ${issuer} is not the expected ${options.issuer}`, {
+      identity,
+      issuer
+    });
+  }
+  const { statement, model } = readRelease(payload);
+  checkDeclaredIdentity(model.predicate.identity, certificate);
+  checkExpected(model, options);
+  if (options.project !== void 0 && options.allowOtherRepository !== true) {
+    checkProjectSigner(options.project, certificate);
+  }
+  return { ...statement, signer: { identity, issuer } };
 }
 
 // node_modules/packslip/dist/index.js
 var DSSE_PAYLOAD_TYPE = "application/vnd.in-toto+json";
-function isObject2(value) {
+function isObject3(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 function parseBundle(bundleJson) {
@@ -37469,7 +38181,7 @@ function parseBundle(bundleJson) {
   } catch (cause) {
     throw new BundleError("the bundle is not valid JSON", { cause });
   }
-  if (!isObject2(value) || !isObject2(value["dsseEnvelope"])) {
+  if (!isObject3(value) || !isObject3(value["dsseEnvelope"])) {
     throw new BundleError("the bundle has no DSSE envelope");
   }
   const envelope = value["dsseEnvelope"];
@@ -37478,10 +38190,8 @@ function parseBundle(bundleJson) {
   }
   return value;
 }
-function signerFromSigstore(signer) {
-  return { identity: signer.identity?.subjectAlternativeName, issuer: signer.identity?.extensions?.issuer };
-}
 async function verifyRelease(bundleJson, options) {
+  checkOptions(options);
   const bundle = parseBundle(bundleJson);
   let signer;
   try {
@@ -37490,28 +38200,13 @@ async function verifyRelease(bundleJson, options) {
     const message = cause instanceof Error ? cause.message : String(cause);
     throw new SignatureError(`sigstore refused the bundle: ${message}`, { cause });
   }
-  const { identity, issuer } = signerFromSigstore(signer);
-  if (identity === void 0 || issuer === void 0) {
-    throw new IdentityError("the bundle is not signed with a certificate that names an identity and issuer");
-  }
-  const identityOk = typeof options.identity === "string" ? identity === options.identity : options.identity(identity);
-  if (!identityOk) {
-    throw new IdentityError(`the signing identity ${identity} is not the expected one`, { identity, issuer });
-  }
-  if (issuer !== options.issuer) {
-    throw new IdentityError(`the certificate issuer ${issuer} is not the expected ${options.issuer}`, {
-      identity,
-      issuer
-    });
-  }
-  const statement = readStatement(bundle.dsseEnvelope.payload, options);
-  return { ...statement, signer: { identity, issuer } };
+  return checkSigned(certificateSigner(signer), bundle.dsseEnvelope.payload, options);
 }
 function findArtifact(statement, assetName) {
   const subject = statement.subject.find((entry) => entry.name === assetName);
   if (subject === void 0)
     throw new ArtifactNotFoundError(assetName);
-  const info = statement.predicate.artifacts.find((entry) => isObject2(entry) && entry.name === assetName);
+  const info = statement.predicate.artifacts.find((entry) => isObject3(entry) && entry.name === assetName);
   const artifact = { name: subject.name, sha256: subject.digest.sha256 };
   if (subject.digest.sha512 !== void 0)
     artifact.sha512 = subject.digest.sha512;
