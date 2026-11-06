@@ -1,6 +1,13 @@
 # Changelog
 
 ---
+## [1.1.2](https://github.com/jdx/aube-action/compare/v1.1.1..v1.1.2) - 2026-11-06
+
+### ⚙️ Miscellaneous Tasks
+
+- rebuild dist/verify.mjs on Renovate PRs (#48) by [@jdx](https://github.com/jdx) in [#48](https://github.com/jdx/aube-action/pull/48)
+
+---
 ## [1.1.1](https://github.com/jdx/aube-action/compare/v1.1.0..v1.1.1) - 2026-10-20
 
 ### 🐛 Bug Fixes
