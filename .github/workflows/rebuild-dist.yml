@@ -1,0 +1,59 @@
+name: rebuild-dist
+
+# dist/verify.mjs is a committed bundle of verify/ and its npm dependencies, and
+# the `dist` job in test.yml fails when it is stale. Renovate bumps verify/
+# dependencies but cannot rebuild the bundle, so this workflow rebuilds it on
+# Renovate PRs and pushes the result to the PR branch.
+#
+# Runs as a PAT (`RELEASE_PLZ_GITHUB_TOKEN`) because a GITHUB_TOKEN push does
+# not trigger test.yml on the new commit. The commit is authored as
+# github-actions[bot], which the shared Renovate config lists in
+# `gitIgnoredAuthors`, so Renovate does not treat the branch as hand-edited.
+
+permissions: {}
+
+on:
+  pull_request:
+    paths:
+      - verify/package.json
+      - verify/package-lock.json
+      - verify/verify.mjs
+      - verify/build.sh
+      - dist/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    # Same-repo Renovate branches only: forks get no secrets, and other authors
+    # rebuild by hand with ./verify/build.sh.
+    if: >-
+      github.event.pull_request.user.login == 'renovate[bot]' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.RELEASE_PLZ_GITHUB_TOKEN }}
+          persist-credentials: true
+      - name: Rebuild the verifier bundle
+        run: ./verify/build.sh
+      - name: Commit the rebuilt bundle
+        env:
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if git diff --quiet -- dist; then
+            echo "dist/verify.mjs is already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist
+          git commit -m "chore(deps): rebuild dist/verify.mjs"
+          git push origin "HEAD:refs/heads/${BRANCH}"
