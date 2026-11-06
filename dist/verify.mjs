@@ -38170,6 +38170,25 @@ var DSSE_PAYLOAD_TYPE = "application/vnd.in-toto+json";
 function isObject3(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+var MAX_BUNDLE_TIMESTAMPS = 8;
+var MAX_CHECKPOINT_SIGNATURES = 16;
+function hasTooManySignatures(envelope) {
+  if (typeof envelope !== "string")
+    return false;
+  const split = envelope.indexOf("\n\n");
+  if (split < 0)
+    return false;
+  let count = 0;
+  for (let at = split + 2; at < envelope.length; ) {
+    if (envelope.startsWith("\u2014 ", at) && ++count > MAX_CHECKPOINT_SIGNATURES)
+      return true;
+    const end = envelope.indexOf("\n", at);
+    if (end < 0)
+      break;
+    at = end + 1;
+  }
+  return false;
+}
 function parseBundle(bundleJson) {
   let value = bundleJson;
   try {
@@ -38187,6 +38206,26 @@ function parseBundle(bundleJson) {
   const envelope = value["dsseEnvelope"];
   if (envelope["payloadType"] !== DSSE_PAYLOAD_TYPE || typeof envelope["payload"] !== "string") {
     throw new BundleError(`the DSSE payload type must be ${DSSE_PAYLOAD_TYPE}`);
+  }
+  const material = value["verificationMaterial"];
+  if (isObject3(material)) {
+    const timestamps = material["timestampVerificationData"];
+    for (const list of [
+      material["tlogEntries"],
+      isObject3(timestamps) ? timestamps["rfc3161Timestamps"] : void 0
+    ]) {
+      if (Array.isArray(list) && list.length > MAX_BUNDLE_TIMESTAMPS) {
+        throw new BundleError("the bundle carries too many log entries or timestamps");
+      }
+    }
+    const entries = material["tlogEntries"];
+    for (const entry of Array.isArray(entries) ? entries : []) {
+      const proof = isObject3(entry) ? entry["inclusionProof"] : void 0;
+      const checkpoint = isObject3(proof) ? proof["checkpoint"] : void 0;
+      if (isObject3(checkpoint) && hasTooManySignatures(checkpoint["envelope"])) {
+        throw new BundleError("the bundle has a checkpoint with too many signatures");
+      }
+    }
   }
   return value;
 }
