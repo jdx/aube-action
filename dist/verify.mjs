@@ -31119,7 +31119,7 @@ var require_verify2 = __commonJS({
     var crypto_1 = __importDefault(__require("crypto"));
     var verifySignature = (metaDataSignedData, key, signature) => {
       const canonicalData = Buffer.from((0, canonical_json_1.canonicalize)(metaDataSignedData));
-      return crypto_1.default.verify(void 0, canonicalData, key, Buffer.from(signature, "hex"));
+      return crypto_1.default.verify(key.hashAlgorithm, canonicalData, key, Buffer.from(signature, "hex"));
     };
     exports.verifySignature = verifySignature;
   }
@@ -31238,6 +31238,8 @@ var require_base2 = __commonJS({
           throw new error_1.ValueError("expires is not defined");
         } else if (!(typeof expires === "string")) {
           throw new TypeError("expires must be a string");
+        } else if (Number.isNaN(new Date(expires).getTime())) {
+          throw new error_1.ValueError("Failed to parse expires");
         }
         if (!utils_1.guard.isDefined(version)) {
           throw new error_1.ValueError("version is not defined");
@@ -31454,11 +31456,11 @@ var require_oid2 = __commonJS({
     function encodeVariableLengthInteger(value) {
       const bytes = [];
       let mask = 0;
-      while (value > 0) {
+      do {
         bytes.unshift(value & 127 | mask);
         value >>= 7;
         mask = 128;
-      }
+      } while (value > 0);
       return bytes;
     }
   }
@@ -31482,6 +31484,7 @@ var require_key2 = __commonJS({
     var OID_EDDSA = "1.3.101.112";
     var OID_EC_PUBLIC_KEY = "1.2.840.10045.2.1";
     var OID_EC_CURVE_P256V1 = "1.2.840.10045.3.1.7";
+    var OID_EC_CURVE_P384 = "1.3.132.0.34";
     var PEM_HEADER = "-----BEGIN PUBLIC KEY-----";
     function getPublicKey(keyInfo) {
       switch (keyInfo.keyType) {
@@ -31504,8 +31507,11 @@ var require_key2 = __commonJS({
       const key = crypto_1.default.createPublicKey(keyInfo.keyVal);
       switch (keyInfo.scheme) {
         case "rsassa-pss-sha256":
+        case "rsassa-pss-sha384":
+        case "rsassa-pss-sha512":
           return {
             key,
+            hashAlgorithm: keyInfo.scheme.slice("rsassa-pss-".length),
             padding: crypto_1.default.constants.RSA_PKCS1_PSS_PADDING
           };
         default:
@@ -31529,6 +31535,26 @@ var require_key2 = __commonJS({
       return { key };
     }
     function getECDCSAPublicKey(keyInfo) {
+      let namedCurve;
+      let curveOID;
+      let hashAlgorithm;
+      switch (keyInfo.scheme) {
+        case "ecdsa-sha2-nistp256":
+          namedCurve = "prime256v1";
+          curveOID = OID_EC_CURVE_P256V1;
+          hashAlgorithm = "sha256";
+          break;
+        case "ecdsa-sha2-nistp384":
+          namedCurve = "secp384r1";
+          curveOID = OID_EC_CURVE_P384;
+          hashAlgorithm = "sha384";
+          break;
+        default:
+          throw new error_1.UnsupportedAlgorithmError(`Unsupported ECDSA scheme: ${keyInfo.scheme}`);
+      }
+      if (keyInfo.keyType !== "ecdsa" && keyInfo.keyType !== keyInfo.scheme) {
+        throw new error_1.CryptoError("ECDSA key type does not match scheme");
+      }
       let key;
       if (keyInfo.keyVal.startsWith(PEM_HEADER)) {
         key = crypto_1.default.createPublicKey(keyInfo.keyVal);
@@ -31537,12 +31563,15 @@ var require_key2 = __commonJS({
           throw new error_1.CryptoError("Invalid key format");
         }
         key = crypto_1.default.createPublicKey({
-          key: ecdsa.hexToDER(keyInfo.keyVal),
+          key: ecdsa.hexToDER(keyInfo.keyVal, curveOID),
           format: "der",
           type: "spki"
         });
       }
-      return { key };
+      if (key.asymmetricKeyType !== "ec" || key.asymmetricKeyDetails?.namedCurve !== namedCurve) {
+        throw new error_1.CryptoError("ECDSA key curve does not match scheme");
+      }
+      return { key, hashAlgorithm };
     }
     var ed25519 = {
       // Translates a hex key into a crypto KeyObject
@@ -31572,7 +31601,7 @@ var require_key2 = __commonJS({
       }
     };
     var ecdsa = {
-      hexToDER: (hex) => {
+      hexToDER: (hex, curveOID) => {
         const key = Buffer.from(hex, "hex");
         const bitString = Buffer.concat([
           Buffer.from([ANS1_TAG_BIT_STRING]),
@@ -31582,7 +31611,7 @@ var require_key2 = __commonJS({
         ]);
         const oids = Buffer.concat([
           (0, oid_1.encodeOIDString)(OID_EC_PUBLIC_KEY),
-          (0, oid_1.encodeOIDString)(OID_EC_CURVE_P256V1)
+          (0, oid_1.encodeOIDString)(curveOID)
         ]);
         const oidSequence = Buffer.concat([
           Buffer.from([ASN1_TAG_SEQUENCE]),
@@ -34794,7 +34823,7 @@ var require_package5 = __commonJS({
   "node_modules/tuf-js/package.json"(exports, module) {
     module.exports = {
       name: "tuf-js",
-      version: "6.0.0",
+      version: "6.0.1",
       description: "JavaScript implementation of The Update Framework (TUF)",
       main: "dist/index.js",
       types: "dist/index.d.ts",
@@ -34822,13 +34851,13 @@ var require_package5 = __commonJS({
       },
       homepage: "https://github.com/theupdateframework/tuf-js/tree/main/packages/client#readme",
       devDependencies: {
-        "@tufjs/repo-mock": "5.0.0",
+        "@tufjs/repo-mock": "5.0.1",
         "@types/debug": "^4.1.13",
         "@types/retry": "^0.12.5"
       },
       dependencies: {
         "@gar/promise-retry": "^1.0.3",
-        "@tufjs/models": "5.0.0",
+        "@tufjs/models": "5.0.1",
         debug: "^4.4.3"
       },
       engines: {
@@ -35286,8 +35315,14 @@ var require_updater = __commonJS({
       // Load local and remote targets metadata.
       // Client workflow 5.6: update targets role
       async loadTargets(role, parentRole) {
-        if (this.trustedSet.getRole(role)) {
-          return this.trustedSet.getRole(role);
+        const cachedRole = this.trustedSet.getRole(role);
+        if (cachedRole) {
+          const delegator = this.trustedSet.getRole(parentRole);
+          if (!delegator) {
+            throw new error_1.RuntimeError(`No trusted ${parentRole} metadata`);
+          }
+          delegator.verifyDelegate(role, cachedRole);
+          return cachedRole;
         }
         try {
           const buffer = this.loadLocalMetadata(role);
