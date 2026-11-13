@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Verifies a downloaded aube release against its signed packslip",
   "dependencies": {
-    "packslip": "1.11.2"
+    "packslip": "1.11.3"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
