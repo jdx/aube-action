@@ -1,6 +1,20 @@
 # Changelog
 
 ---
+## [1.1.3](https://github.com/jdx/aube-action/compare/v1.1.2..v1.1.3) - 2026-11-28
+
+### ⚙️ Miscellaneous Tasks
+
+- **(renovate)** rebase PRs that fall behind main (#61) by [@jdx](https://github.com/jdx) in [#61](https://github.com/jdx/aube-action/pull/61)
+- use jdx/workflows link-discussions by [@claude](https://github.com/claude) in [419667b](https://github.com/jdx/aube-action/commit/419667bef76f0c564a077cc9bd7b290d3c3a038a)
+- add caller concurrency to link-discussions by [@claude](https://github.com/claude) in [4f4392d](https://github.com/jdx/aube-action/commit/4f4392d603418e8951f5f41c1255d5effc4008fc)
+- add GitHub Actions workflow lockfile by [@claude](https://github.com/claude) in [401a224](https://github.com/jdx/aube-action/commit/401a2246835b76a689caf43fb89b0e7dd2e45167)
+
+### New Contributors
+
+* @claude made their first contribution
+
+---
 ## [1.1.2](https://github.com/jdx/aube-action/compare/v1.1.1..v1.1.2) - 2026-11-06
 
 ### ⚙️ Miscellaneous Tasks
